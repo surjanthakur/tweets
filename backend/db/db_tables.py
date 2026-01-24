@@ -53,6 +53,8 @@ class Profile(SQLModel, table=True):
             ondelete="CASCADE",
         ),
     ]
+    followers_count: Annotated[int, Field(title="number of followers", default=0)]
+    following_count: Annotated[int, Field(title="number of following", default=0)]
     handle_name: Annotated[
         str,
         Field(
