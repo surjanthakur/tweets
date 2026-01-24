@@ -27,6 +27,7 @@ class Tweet(SQLModel, table=True):
         ),
     ]
     like_count: Annotated[int, Field(title="number of likes", default=0)]
+    unlike_count: Annotated[int, Field(title="number of unlike", default=0)]
     content: Annotated[
         str, Field(..., title="content field", min_length=10, max_length=250)
     ]
