@@ -1,0 +1,66 @@
+from sqlmodel import SQLModel, Field, Relationship
+from typing import Annotated, List
+from pydantic import field_validator
+import uuid
+from uuid import UUID
+from datetime import datetime
+from .tweet_table import Tweet
+
+
+# Profile table definition with validations
+class Profile(SQLModel, table=True):
+    profile_id: Annotated[
+        UUID,
+        Field(
+            default_factory=lambda: uuid.uuid4(),
+            primary_key=True,
+            nullable=False,
+        ),
+    ]
+    user_id: Annotated[
+        UUID,
+        Field(
+            foreign_key="user.user_id",
+            nullable=False,
+            title="user id field",
+            ondelete="CASCADE",
+        ),
+    ]
+    followers_count: Annotated[int, Field(title="number of followers", default=0)]
+    following_count: Annotated[int, Field(title="number of following", default=0)]
+    handle_name: Annotated[
+        str,
+        Field(
+            ...,
+            title="handlename field @yourname",
+            min_length=3,
+            max_length=30,
+            unique=True,
+        ),
+    ]
+    profession: Annotated[
+        str, Field(..., title="profession field", min_length=3, max_length=30)
+    ]
+    bio: Annotated[str, Field(..., title="bio field", min_length=10, max_length=150)]
+    profile_picture: Annotated[str, Field(..., title="profile picture field")]
+    tweets: List["Tweet"] = Relationship(
+        back_populates="profile",
+        sa_relationship_kwargs={"cascade": "all, delete"},
+    )
+    created_at: datetime = Field(
+        default_factory=datetime.now(datetime.utcnow), nullable=False
+    )
+
+    # validator to check if handle_name  start with @.
+    @field_validator("handle_name", mode="before")
+    @classmethod
+    def handle_validator(clas, value):
+        if value.startswith("@"):
+            return value
+        raise ValueError("enter a valid handle name that start's with @yourname")
+
+    # return title cased profession and bio.
+    @field_validator("profession", "bio", mode="after")
+    @classmethod
+    def validate_content(cla, value):
+        return value.title()
