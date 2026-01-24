@@ -20,7 +20,10 @@ class Settings(BaseSettings):
     db_url: str
     db_echo: bool = False
 
-    env_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+    )
 
 
 # Initialize settings from environment variables
@@ -29,7 +32,7 @@ env_settings = Settings()
 # Create asynchronous database engine
 engine: AsyncEngine = create_async_engine(
     env_settings.db_url,
-    echo=env_settings.env_config,
+    echo=env_settings.db_echo,
     pool_pre_ping=True,
 )
 
