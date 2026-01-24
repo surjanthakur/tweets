@@ -111,6 +111,7 @@ class Tweet(SQLModel, table=True):
             ondelete="CASCADE",
         ),
     ]
+    like_count: Annotated[int, Field(title="number of likes", default=0)]
     content: Annotated[
         str, Field(..., title="content field", min_length=10, max_length=250)
     ]
