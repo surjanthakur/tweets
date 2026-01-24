@@ -11,5 +11,7 @@ dependencies = [
     "pydantic-settings",
     "pydantic[email]",
     "sqlalchemy",
+    "sqlmodel>=0.0.31",
     "uvicorn",
+    "uvloop>=0.22.1",
 ]
