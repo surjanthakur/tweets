@@ -47,6 +47,7 @@ class Tweet(SQLModel, table=True):
         return value.title()
 
 
+# Comment table definition with validations ------------------------------>
 class Comment(SQLModel, table=True):
     comment_id: Annotated[
         UUID,
