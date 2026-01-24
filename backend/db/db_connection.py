@@ -65,7 +65,6 @@ async def create_db_tables():
     try:
         async with engine.begin() as conn:
             await conn.run_sync(SQLModel.metadata.create_all)
-            print("Database tables created successfully 👍🏻.")
     except SQLAlchemyError as err:
         logger.error(f"database table creation error: {err}")
         raise
