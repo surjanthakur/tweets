@@ -19,7 +19,7 @@ class request_profile(BaseModel):
 
 
 # Pydantic model for profile response
-class reaponse_profile(BaseModel):
+class response_profile(BaseModel):
     handle_name: Annotated[
         str,
         Field(
