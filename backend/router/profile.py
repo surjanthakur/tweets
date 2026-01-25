@@ -4,7 +4,6 @@ from db.profile_table import Profile
 from db.db_connection import get_session
 import logging
 from fastapi import APIRouter, HTTPException, status, Depends, Path
-from uuid import UUID
 from sqlmodel import select
 from sqlalchemy.orm import selectinload
 from fastapi.responses import JSONResponse
@@ -27,12 +26,12 @@ async def get_profile(
         result = await db.exec(
             select(Profile)
             .options(selectinload(Profile.tweets))
-            .where(Profile. == handle_name)
+            .where(Profile.username == curr_username)
         )
         my_profile = result.first()
         if not my_profile:
             logger.warning(
-                f"cant find profile with this profile handle name: {handle_name}"
+                f"cant find profile with this profile handle name: {curr_username}"
             )
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -49,16 +48,16 @@ async def get_profile(
 
 # create new_post if user authenticated
 @profile_router.post(
-    "/create/{user_id}",
+    "/create/{curr_username}",
     status_code=status.HTTP_201_CREATED,
     summary="Create profile for the authenticated user",
 )
 async def create_profile(
     profile_data: request_profile,
-    user_id: UUID = Path(..., title="user id field"),
+    curr_username: str = Path(..., title="profile username name"),
     db: AsyncSession = Depends(get_session),
 ):
-    result = await db.exec(select(Profile).where(Profile.user_id == user_id))
+    result = await db.exec(select(Profile).where(Profile.username == curr_username))
     my_profile = result.first()
     if my_profile:
         raise HTTPException(
@@ -67,7 +66,7 @@ async def create_profile(
         )
     try:
         new_profile = Profile(**profile_data.model_dump(exclude_unset=True))
-        new_profile.user_id = user_id
+        new_profile.username = curr_username
         db.add(new_profile)
         await db.commit()
         await db.refresh(new_profile)
@@ -83,6 +82,34 @@ async def create_profile(
         )
 
 
-@profile_router.put("/edit/{handle_name}")
-def edit_profile( handle_name: str = Path(..., title="profile handle name"),
-    db: AsyncSession = Depends(get_session))
+# edit profile id user has a profile
+@profile_router.put("/edit/{curr_username}")
+async def edit_profile(
+    profile_data: request_profile,
+    curr_username: str = Path(..., title="profile username"),
+    db: AsyncSession = Depends(get_session),
+):
+    result = await db.exec(select(Profile).where(Profile.username == curr_username))
+    my_profile = result.first()
+    if not my_profile:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="You don't have a profile to edit.",
+        )
+    updated_dic = profile_data.model_dump(exclude_unset=True)
+    for k, v in updated_dic.items():
+        setattr(my_profile, k, v)
+    try:
+        db.add(my_profile)
+        await db.commit()
+        await db.refresh(my_profile)
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=f"Profile {my_profile.handle_name} edited successfully.",
+        )
+    except Exception as err:
+        logger.error(f"error while editing profile:{err}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="error while editing profile",
+        )

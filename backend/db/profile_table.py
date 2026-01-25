@@ -5,6 +5,7 @@ import uuid
 from uuid import UUID
 from datetime import datetime
 from .tweet_table import Tweet
+from .follow_table import Follow
 
 
 # Profile table definition with validations
@@ -27,8 +28,14 @@ class Profile(SQLModel, table=True):
             unique=True,
         ),
     ]
-    followers_count: Annotated[int, Field(title="number of followers", default=0)]
-    following_count: Annotated[int, Field(title="number of following", default=0)]
+    followers: List["Follow"] = Relationship(
+        back_populates="followed",
+        sa_relationship_kwargs={"foreign_keys": "Follow.followed_id"},
+    )
+    following: List["Follow"] = Relationship(
+        back_populates="follower",
+        sa_relationship_kwargs={"foreign_keys": "Follow.follower_id"},
+    )
     handle_name: Annotated[
         str,
         Field(
