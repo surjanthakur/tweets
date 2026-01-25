@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from db.db_connection import create_db_tables
+from router import profile
 from contextlib import asynccontextmanager
 import logging
 
@@ -28,10 +29,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     lifespan=lifespan,
-    title="Tweet Analysis API",
-    version="0.1",
-    description="API for analyzing tweets using FastAPI",
-    docs_url="/docs" if not PRODUCTION else None,
-    redoc_url="/redoc" if not PRODUCTION else None,
-    openapi_url="/openapi.json" if not PRODUCTION else None,
+    docs_url=None if PRODUCTION else "/docs",
+    redoc_url=None if PRODUCTION else "/redoc",
+    openapi_url=None if PRODUCTION else "/openapi.json",
 )
+
+
+app.include_router(router=profile.profile_router)

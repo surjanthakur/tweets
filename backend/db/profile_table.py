@@ -4,7 +4,7 @@ from pydantic import field_validator
 import uuid
 from uuid import UUID
 from datetime import datetime
-from .tweet_table import Tweet
+from tweet_table import Tweet
 
 
 # Profile table definition with validations
