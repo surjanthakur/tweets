@@ -10,17 +10,14 @@ from datetime import datetime
 class User(SQLModel, table=True):
     user_id: Annotated[
         UUID,
-        Field(
-            default_factory=lambda: uuid.uuid4(),
-            primary_key=True,
-            nullable=False,
-        ),
+        Field(default_factory=lambda: uuid.uuid4(), nullable=False),
     ]
     username: Annotated[
         str,
         Field(
             ...,
             title="username field @username",
+            primary_key=True,
             min_length=3,
             max_length=40,
             unique=True,

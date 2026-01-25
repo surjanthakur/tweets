@@ -17,13 +17,14 @@ class Profile(SQLModel, table=True):
             nullable=False,
         ),
     ]
-    user_id: Annotated[
-        UUID,
+    username: Annotated[
+        str,
         Field(
-            foreign_key="user.user_id",
+            foreign_key="user.username",
             nullable=False,
-            title="user id field",
+            title="username field @username",
             ondelete="CASCADE",
+            unique=True,
         ),
     ]
     followers_count: Annotated[int, Field(title="number of followers", default=0)]

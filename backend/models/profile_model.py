@@ -9,7 +9,7 @@ class request_profile(BaseModel):
         str,
         Field(
             ...,
-            title="handlename field @yourname",
+            title="handlename field",
             min_length=3,
             max_length=30,
         ),
@@ -24,7 +24,7 @@ class response_profile(BaseModel):
         str,
         Field(
             ...,
-            title="handlename field @yourname",
+            title="handlename field",
             min_length=3,
             max_length=30,
         ),

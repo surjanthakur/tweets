@@ -66,13 +66,14 @@ class Comment(SQLModel, table=True):
             ondelete="CASCADE",
         ),
     ]
-    profile_id: Annotated[
-        UUID,
+    username: Annotated[
+        str,
         Field(
-            foreign_key="profile.profile_id",
+            foreign_key="user.username",
             nullable=False,
-            title="profile id field",
+            title="username field @username",
             ondelete="CASCADE",
+            unique=True,
         ),
     ]
     tweet: "Tweet" = Relationship(back_populates="comments")
