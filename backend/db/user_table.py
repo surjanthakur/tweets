@@ -17,7 +17,14 @@ class User(SQLModel, table=True):
         ),
     ]
     username: Annotated[
-        str, Field(..., title="username field", min_length=3, max_length=40)
+        str,
+        Field(
+            ...,
+            title="username field @username",
+            min_length=3,
+            max_length=40,
+            unique=True,
+        ),
     ]
     email: Annotated[str, Field(..., title="email field")]
     password: Annotated[str, Field(..., title="password field")]
@@ -33,3 +40,11 @@ class User(SQLModel, table=True):
         if valid_email != "gmail.com":
             raise ValueError("not a valid email it should be [gmail.com]")
         return value
+
+    # validator to check if handle_name  start with @.
+    @field_validator("username", mode="before")
+    @classmethod
+    def handle_validator(clas, value):
+        if value.startswith("@"):
+            return value
+        raise ValueError("enter a valid handle name that start's with @yourname")

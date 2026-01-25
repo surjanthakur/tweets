@@ -32,10 +32,9 @@ class Profile(SQLModel, table=True):
         str,
         Field(
             ...,
-            title="handlename field @yourname",
+            title="handle name field",
             min_length=3,
             max_length=30,
-            unique=True,
         ),
     ]
     profession: Annotated[
@@ -50,14 +49,6 @@ class Profile(SQLModel, table=True):
     created_at: datetime = Field(
         default_factory=datetime.now(datetime.utcnow), nullable=False
     )
-
-    # validator to check if handle_name  start with @.
-    @field_validator("handle_name", mode="before")
-    @classmethod
-    def handle_validator(clas, value):
-        if value.startswith("@"):
-            return value
-        raise ValueError("enter a valid handle name that start's with @yourname")
 
     # return title cased profession and bio.
     @field_validator("profession", "bio", mode="after")
