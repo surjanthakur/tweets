@@ -5,11 +5,11 @@ from .tweets_model import response_tweet
 
 # Pydantic model for profile creation request
 class request_profile(BaseModel):
-    handle_name: Annotated[
+    name: Annotated[
         str,
         Field(
             ...,
-            title="handlename field",
+            title="name field",
             min_length=3,
             max_length=30,
         ),
@@ -20,11 +20,11 @@ class request_profile(BaseModel):
 
 # Pydantic model for profile response
 class response_profile(BaseModel):
-    handle_name: Annotated[
+    name: Annotated[
         str,
         Field(
             ...,
-            title="handlename field",
+            title="name field",
             min_length=3,
             max_length=30,
         ),

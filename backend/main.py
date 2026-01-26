@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from db.db_connection import create_db_tables
-from router import profile
+from router.profile import profile_router
 from contextlib import asynccontextmanager
 import logging
+from db.db_connection import create_db_tables
 
 
 logging.basicConfig(level=logging.INFO)
@@ -35,4 +35,4 @@ app = FastAPI(
 )
 
 
-app.include_router(router=profile.profile_router)
+app.include_router(router=profile_router)
