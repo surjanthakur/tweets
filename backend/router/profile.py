@@ -6,7 +6,7 @@ import logging
 from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlmodel import select
 from sqlalchemy.orm import selectinload
-
+from uuid import UUID
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -15,33 +15,29 @@ profile_router = APIRouter(prefix="/profile", tags=["Profile"])
 
 
 # Get profile by handle name helper function
-async def get_profile_db(db: AsyncSession, curr_handle_name: str) -> Profile | None:
-    result = await db.exec(
-        select(Profile).where(Profile.handle_name == curr_handle_name)
-    )
+async def get_profile_db(db: AsyncSession, curr_user_id: UUID) -> Profile | None:
+    result = await db.exec(select(Profile).where(Profile.user_id == curr_user_id))
     return result.first()
 
 
 # Get profile by handle name
 @profile_router.get(
-    "/{curr_handle}", status_code=status.HTTP_200_OK, response_model=response_profile
+    "/{curr_user_id}", status_code=status.HTTP_200_OK, response_model=response_profile
 )
 async def get_profile(
-    curr_handle: str = Path(..., title="profile username name"),
+    curr_user_id: UUID = Path(..., title="profile username name"),
     db: AsyncSession = Depends(get_session),
 ):
     try:
         result = await db.exec(
             select(Profile)
             .options(selectinload(Profile.tweets))
-            .where(Profile.handle_name == curr_handle)
+            .where(Profile.user_id == curr_user_id)
         )
         my_profile = result.first()
         if not my_profile:
             await db.rollback()
-            logger.warning(
-                f"cant find profile with this profile handle name: {curr_handle}"
-            )
+            logger.warning(f"cant find profile with this profile handle")
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="cant find profile with this profile handle name",
@@ -60,16 +56,16 @@ async def get_profile(
 
 # create new_post if user authenticated
 @profile_router.post(
-    "/create/{curr_handle}",
+    "/create/{curr_user_id}",
     status_code=status.HTTP_201_CREATED,
     summary="Create profile for the authenticated user",
 )
 async def create_profile(
     profile_data: request_profile,
-    curr_handle: str = Path(..., title="profile username name"),
+    curr_user_id: UUID = Path(..., title="profile username name"),
     db: AsyncSession = Depends(get_session),
 ):
-    my_profile = await get_profile_db(db, curr_handle)
+    my_profile = await get_profile_db(db, curr_user_id)
     if not my_profile:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -77,7 +73,7 @@ async def create_profile(
         )
     try:
         new_profile = Profile(**profile_data.model_dump(exclude_unset=True))
-        new_profile.handle_name = curr_handle
+        new_profile.user_id = curr_user_id
         db.add(new_profile)
         await db.commit()
         await db.refresh(new_profile)
@@ -95,13 +91,13 @@ async def create_profile(
 
 
 # edit profile id user has a profile
-@profile_router.put("/edit/{curr_handle}")
+@profile_router.put("/edit/{curr_user_id}")
 async def edit_profile(
     profile_data: request_profile,
-    curr_handle: str = Path(..., title="profile username"),
+    curr_user_id: UUID = Path(..., title="profile username"),
     db: AsyncSession = Depends(get_session),
 ):
-    my_profile = await get_profile_db(db, curr_handle)
+    my_profile = await get_profile_db(db, curr_user_id)
     if not my_profile:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
