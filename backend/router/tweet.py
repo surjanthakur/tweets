@@ -3,7 +3,7 @@ from models.tweets_model import request_tweet, response_tweet
 from db.db_tables import Tweet, Profile
 from db.db_connection import get_session
 import logging
-from fastapi import APIRouter, HTTPException, status, Depends, Path
+from fastapi import APIRouter, HTTPException, status, Depends
 from sqlmodel import select
 from sqlalchemy.orm import selectinload
 from uuid import UUID
@@ -82,6 +82,7 @@ async def create_new_tweet(
     return new_tweet
 
 
+# delete tweet by id
 @tweet_router.delete("/{tweet_id}/delete")
 async def delete_tweet(tweet_id: UUID, db: AsyncSession = Depends(get_session)):
     my_tweet = get_tweet_db(db, tweet_id)

@@ -1,6 +1,20 @@
-from pydantic import BaseModel, Field, AnyUrl
+from pydantic import BaseModel, EmailStr, Field, AnyUrl
 from typing import Annotated
-from .tweets_model import response_tweet
+
+
+# Pydantic model for user creation request
+class request_user(BaseModel):
+    username: Annotated[
+        str,
+        Field(
+            ...,
+            title="@username field",
+            min_length=3,
+            max_length=40,
+        ),
+    ]
+    email: Annotated[EmailStr, Field(..., title="email field")]
+    password: Annotated[str, Field(..., title="password field")]
 
 
 # Pydantic model for profile creation request
@@ -37,3 +51,19 @@ class response_profile(BaseModel):
     following_count: Annotated[int, Field(title="number of following")]
     created_at: Annotated[str, Field(..., title="created at field")]
     tweets: list[response_tweet]
+
+
+# Pydantic model for tweet creation request.
+class request_tweet(BaseModel):
+    content: Annotated[
+        str, Field(..., title="content field", min_length=10, max_length=250)
+    ]
+
+
+# Pydantic model for tweet response.
+class response_tweet(BaseModel):
+    content: Annotated[
+        str, Field(..., title="content field", min_length=10, max_length=250)
+    ]
+    profile: response_profile
+    created_at: Annotated[str, Field(..., title="created at field")]
