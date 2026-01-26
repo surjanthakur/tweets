@@ -22,7 +22,10 @@ async def get_profile_db(db: AsyncSession, curr_user_id: UUID) -> Profile | None
 
 # Get profile by handle name
 @profile_router.get(
-    "/{curr_user_id}", status_code=status.HTTP_200_OK, response_model=response_profile
+    "/{curr_user_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=response_profile,
+    summary="get profile by id",
 )
 async def get_profile(
     curr_user_id: UUID = Path(..., title="profile username name"),
