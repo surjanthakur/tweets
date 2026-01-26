@@ -71,6 +71,8 @@ class Profile(SQLModel, table=True):
     profession: Annotated[str, Field(..., min_length=3, max_length=30)]
     bio: Annotated[str, Field(..., min_length=10, max_length=150)]
     profile_picture: Annotated[str, Field(...)]
+    followers_count: int = Field(default=0, ge=0)
+    following_count: int = Field(default=0, ge=0)
 
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
