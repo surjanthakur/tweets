@@ -1,6 +1,6 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from models.tweets_model import request_tweet, response_tweet
-from db.db_tables import Tweet
+from db.db_tables import Tweet, Profile
 from db.db_connection import get_session
 import logging
 from fastapi import APIRouter, HTTPException, status, Depends, Path
@@ -43,7 +43,7 @@ async def get_all_tweets(db: AsyncSession = Depends(get_session)):
 
 
 # Get tweet by ID
-@tweet_router.get("/{tweet_id}")
+@tweet_router.get("/{tweet_id}", status_code=status.HTTP_200_OK)
 async def get_tweet_by_id(tweet_id: UUID, db: AsyncSession = Depends(get_session)):
     try:
         my_tweet = await get_tweet_db(db, tweet_id)
@@ -60,8 +60,23 @@ async def get_tweet_by_id(tweet_id: UUID, db: AsyncSession = Depends(get_session
         )
 
 
-@tweet_router.post("/create/{profile_id}")
-def create_new_tweet(
-    tweet_data: request_tweet, profile_id: UUID, db: AsyncSession = Depends(get_session)
+# create new tweet
+@tweet_router.post("/create/{curr_user_id}", status_code=status.HTTP_201_CREATED)
+async def create_new_tweet(
+    tweet_data: request_tweet,
+    curr_user_id: UUID,
+    db: AsyncSession = Depends(get_session),
 ):
-    pass
+    result = await db.exec(select(Profile).where(Profile.user_id == curr_user_id))
+    my_profile = result.first()
+    if not my_profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profile not found for the user",
+        )
+    new_tweet = Tweet(**tweet_data.model_dump(exclude_unset=True))
+    new_tweet.profile_id = my_profile.profile_id
+    db.add(new_tweet)
+    await db.commit()
+    await db.refresh()
+    return new_tweet

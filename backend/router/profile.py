@@ -69,7 +69,7 @@ async def create_profile(
     db: AsyncSession = Depends(get_session),
 ):
     my_profile = await get_profile_db(db, curr_user_id)
-    if not my_profile:
+    if my_profile:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="You already have a profile. Only one profile per user allowed.",
