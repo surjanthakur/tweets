@@ -80,3 +80,16 @@ async def create_new_tweet(
     await db.commit()
     await db.refresh()
     return new_tweet
+
+
+@tweet_router.delete("/{tweet_id}/delete")
+async def delete_tweet(tweet_id: UUID, db: AsyncSession = Depends(get_session)):
+    my_tweet = get_tweet_db(db, tweet_id)
+    if not my_tweet:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Tweet not found",
+        )
+    await db.delete(my_tweet)
+    await db.commit()
+    return {"detail": "Tweet deleted successfully"}
