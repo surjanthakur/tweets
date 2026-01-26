@@ -1,9 +1,7 @@
-import { useState } from "react";
-
-export function HomeFeed() {
+export default function HomeFeed() {
   return (
-    <div>
+    <section>
       <h1>this is home feed</h1>
-    </div>
+    </section>
   );
 }

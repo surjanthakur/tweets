@@ -1,9 +1,7 @@
-import { useState } from "react";
-
-export function SidebarSection() {
+export default function SidebarSection() {
   return (
-    <div>
+    <section>
       <h1>this is sidebar</h1>
-    </div>
+    </section>
   );
 }

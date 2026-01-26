@@ -1,10 +1,10 @@
 import { SidebarSection, HomeFeed } from "../components/index";
-
-export const MainLayout = () => {
+import "./layout.css";
+export default function MainLayout() {
   return (
     <div className="app-layout">
-      <SidebarSection />
-      <HomeFeed />
+      <SidebarSection className="sidebar" />
+      <HomeFeed className="feed" />
     </div>
   );
-};
+}
