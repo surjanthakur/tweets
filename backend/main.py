@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from router.profile import profile_router
+from router import profile, tweet
 from contextlib import asynccontextmanager
 import logging
 from db.db_connection import create_db_tables
@@ -35,4 +35,5 @@ app = FastAPI(
 )
 
 
-app.include_router(router=profile_router)
+app.include_router(router=profile.profile_router)
+app.include_router(router=tweet.tweet_router)
