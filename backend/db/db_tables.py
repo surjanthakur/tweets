@@ -3,170 +3,175 @@ from typing import Annotated, List
 from pydantic import field_validator
 import uuid
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, timezone
 
 
-# User table definition with validations
+# =========================
+# User table
+# =========================
 class User(SQLModel, table=True):
     user_id: Annotated[
         UUID,
-        Field(default_factory=lambda: uuid.uuid4(), nullable=False),
+        Field(
+            default_factory=uuid.uuid4,
+            primary_key=True,
+            nullable=False,
+        ),
     ]
     handle_name: Annotated[
         str,
         Field(
             ...,
             title="username field @yourname",
-            primary_key=True,
             min_length=3,
             max_length=40,
             unique=True,
+            index=True,
         ),
     ]
-    email: Annotated[str, Field(..., title="email field")]
-    password: Annotated[str, Field(..., title="password field")]
-    created_at: datetime = Field(default_factory=datetime.now, nullable=False)
 
-    #  email validator to check if email ends with gmail.com.
+    email: Annotated[str, Field(..., title="email field", unique=True, index=True)]
+    password: Annotated[str, Field(..., title="hashed password field")]
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    profile: "Profile" = Relationship(
+        back_populates="user", sa_relationship_kwargs={"cascade", "all ,delete"}
+    )
+
     @field_validator("email", mode="before")
     @classmethod
-    def email_validator(clas, value):
-        valid_email = value.split("@")[-1]
-        if valid_email != "gmail.com":
-            raise ValueError("not a valid email it should be [gmail.com]")
+    def email_validator(cls, value: str):
+        if "@" not in value:
+            raise ValueError("invalid email format")
+        if value.split("@")[-1].lower() != "gmail.com":
+            raise ValueError("email must end with gmail.com")
         return value
 
-    # validator to check if handle_name  start with @.
     @field_validator("handle_name", mode="before")
     @classmethod
-    def handle_validator(clas, value):
-        if value.startswith("@"):
-            return value
-        raise ValueError("enter a valid handle name that start's with @yourname")
+    def handle_validator(cls, value: str):
+        if not value.startswith("@"):
+            raise ValueError("handle_name must start with @")
+        return value
 
 
-# Profile table definition with validations
+# =========================
+# Profile table
+# =========================
 class Profile(SQLModel, table=True):
     profile_id: Annotated[
         UUID,
         Field(
-            default_factory=lambda: uuid.uuid4(),
+            default_factory=uuid.uuid4,
             primary_key=True,
             nullable=False,
         ),
     ]
-    handle_name: Annotated[
-        str,
+
+    user_id: Annotated[
+        UUID,
         Field(
-            foreign_key="user.handle_name",
+            foreign_key="user.user_id",
             nullable=False,
-            title="username field @yourname",
-            ondelete="CASCADE",
             unique=True,
+            ondelete="CASCADE",
         ),
     ]
-    name: Annotated[
-        str,
-        Field(
-            ...,
-            title=" name field",
-            min_length=3,
-            max_length=30,
-        ),
-    ]
-    profession: Annotated[
-        str, Field(..., title="profession field", min_length=3, max_length=30)
-    ]
-    bio: Annotated[str, Field(..., title="bio field", min_length=10, max_length=150)]
-    profile_picture: Annotated[str, Field(..., title="profile picture field")]
-    tweets: List["Tweet"] = Relationship(  # type: ignore
-        back_populates="profile",
-        sa_relationship_kwargs={"cascade": "all, delete"},
+
+    name: Annotated[str, Field(..., min_length=3, max_length=30)]
+    profession: Annotated[str, Field(..., min_length=3, max_length=30)]
+    bio: Annotated[str, Field(..., min_length=10, max_length=150)]
+    profile_picture: Annotated[str, Field(...)]
+
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
-    created_at: datetime = Field(default_factory=datetime.now, nullable=False)
 
-    # return title cased profession and bio.
-    @field_validator("profession", "bio", mode="after")
-    @classmethod
-    def validate_content(cla, value):
-        return value.title()
+    user: "User" = Relationship(back_populates="profile")
+    tweets: List["Tweet"] = Relationship(
+        back_populates="profile",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )
 
 
-# Tweet table definition with validations
+# =========================
+# Tweet table
+# =========================
 class Tweet(SQLModel, table=True):
     tweet_id: Annotated[
         UUID,
         Field(
-            default_factory=lambda: uuid.uuid4(),
+            default_factory=uuid.uuid4,
             primary_key=True,
             nullable=False,
         ),
     ]
+
     profile_id: Annotated[
         UUID,
         Field(
             foreign_key="profile.profile_id",
             nullable=False,
-            title="profile id field",
             ondelete="CASCADE",
         ),
     ]
-    like_count: Annotated[int, Field(title="number of likes", default=0)]
-    unlike_count: Annotated[int, Field(title="number of unlike", default=0)]
-    content: Annotated[
-        str, Field(..., title="content field", min_length=10, max_length=250)
-    ]
-    profile: "Profile" = Relationship(  # type: ignore
-        back_populates="tweets",
-        sa_relationship_kwargs={"cascade": "all, delete"},
+
+    content: Annotated[str, Field(..., min_length=10, max_length=250)]
+    like_count: Annotated[int, Field(default=0)]
+    unlike_count: Annotated[int, Field(default=0)]
+
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        nullable=False,
     )
-    comments: List["Comment"] = Relationship(back_populates="tweet")
-    created_at: datetime = Field(default_factory=datetime.now, nullable=False)
 
-    # return title cased content.
-    @field_validator("content", mode="after")
-    @classmethod
-    def validate_content(cla, value):
-        return value.title()
+    profile: "Profile" = Relationship(back_populates="tweets")
+    comments: List["Comment"] = Relationship(
+        back_populates="tweet",
+        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
+    )
 
 
-# Comment table definition with validations ------------------------------>
+# =========================
+# Comment table
+# =========================
 class Comment(SQLModel, table=True):
     comment_id: Annotated[
         UUID,
         Field(
-            default_factory=lambda: uuid.uuid4(),
+            default_factory=uuid.uuid4,
             primary_key=True,
             nullable=False,
         ),
     ]
+
     tweet_id: Annotated[
         UUID,
         Field(
             foreign_key="tweet.tweet_id",
             nullable=False,
-            title="tweet id field",
             ondelete="CASCADE",
         ),
     ]
-    handle_name: Annotated[
-        str,
-        Field(
-            foreign_key="user.handle_name",
-            nullable=False,
-            title="username field @yourname",
-            ondelete="CASCADE",
-            unique=True,
-        ),
-    ]
-    tweet: "Tweet" = Relationship(back_populates="comments")
-    content: Annotated[
-        str, Field(..., title="comment content field", min_length=1, max_length=150)
-    ]
-    created_at: datetime = Field(default_factory=datetime.now, nullable=False)
 
-    # return title cased content.
-    @field_validator("content", mode="after")
-    @classmethod
-    def validate_content(cla, value):
-        return value.title()
+    user_id: Annotated[
+        UUID,
+        Field(
+            foreign_key="user.user_id",
+            nullable=False,
+            ondelete="CASCADE",
+        ),
+    ]
+
+    content: Annotated[str, Field(..., min_length=1, max_length=150)]
+
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    tweet: "Tweet" = Relationship(back_populates="comments")
