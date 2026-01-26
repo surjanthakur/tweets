@@ -1,5 +1,5 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
-from models.tweets_model import request_tweet, response_tweet
+from models.pydantic_Validation import request_tweet, response_tweet
 from db.db_tables import Tweet, Profile
 from db.db_connection import get_session
 import logging

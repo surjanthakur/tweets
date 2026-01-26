@@ -1,5 +1,5 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
-from models.profile_model import request_profile, response_profile
+from models.pydantic_Validation import request_profile, response_profile
 from db.db_tables import Profile
 from db.db_connection import get_session
 import logging
