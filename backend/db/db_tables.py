@@ -10,13 +10,7 @@ from datetime import datetime, timezone
 # User table
 # =========================
 class User(SQLModel, table=True):
-    user_id: UUID = (
-        Field(
-            primary_key=True,
-            default_factory=uuid.uuid4,
-            nullable=False,
-        ),
-    )
+    user_id: UUID = Field(primary_key=True, default_factory=uuid.uuid4, nullable=False)
 
     handle_name: Annotated[
         str,
@@ -60,21 +54,17 @@ class User(SQLModel, table=True):
 # Profile table
 # =========================
 class Profile(SQLModel, table=True):
-    profile_id: UUID = (
-        Field(
-            default_factory=uuid.uuid4,
-            primary_key=True,
-            nullable=False,
-        ),
+    profile_id: UUID = Field(
+        default_factory=uuid.uuid4,
+        primary_key=True,
+        nullable=False,
     )
 
-    user_id: UUID = (
-        Field(
-            foreign_key="user.user_id",
-            nullable=False,
-            unique=True,
-            ondelete="CASCADE",
-        ),
+    user_id: UUID = Field(
+        foreign_key="user.user_id",
+        nullable=False,
+        unique=True,
+        ondelete="CASCADE",
     )
 
     name: Annotated[str, Field(..., min_length=3, max_length=30)]
@@ -95,20 +85,16 @@ class Profile(SQLModel, table=True):
 # Tweet table
 # =========================
 class Tweet(SQLModel, table=True):
-    tweet_id: UUID = (
-        Field(
-            default_factory=uuid.uuid4,
-            primary_key=True,
-            nullable=False,
-        ),
+    tweet_id: UUID = Field(
+        default_factory=uuid.uuid4,
+        primary_key=True,
+        nullable=False,
     )
 
-    profile_id: UUID = (
-        Field(
-            foreign_key="profile.profile_id",
-            nullable=False,
-            ondelete="CASCADE",
-        ),
+    profile_id: UUID = Field(
+        foreign_key="profile.profile_id",
+        nullable=False,
+        ondelete="CASCADE",
     )
 
     content: Annotated[str, Field(..., min_length=10, max_length=250)]
@@ -128,28 +114,22 @@ class Tweet(SQLModel, table=True):
 # Comment table
 # =========================
 class Comment(SQLModel, table=True):
-    comment_id: UUID = (
-        Field(
-            default_factory=uuid.uuid4,
-            primary_key=True,
-            nullable=False,
-        ),
+    comment_id: UUID = Field(
+        default_factory=uuid.uuid4,
+        primary_key=True,
+        nullable=False,
     )
 
-    tweet_id: UUID = (
-        Field(
-            foreign_key="tweet.tweet_id",
-            nullable=False,
-            ondelete="CASCADE",
-        ),
+    tweet_id: UUID = Field(
+        foreign_key="tweet.tweet_id",
+        nullable=False,
+        ondelete="CASCADE",
     )
 
-    user_id: UUID = (
-        Field(
-            foreign_key="user.user_id",
-            nullable=False,
-            ondelete="CASCADE",
-        ),
+    user_id: UUID = Field(
+        foreign_key="user.user_id",
+        nullable=False,
+        ondelete="CASCADE",
     )
 
     content: Annotated[str, Field(..., min_length=1, max_length=150)]
