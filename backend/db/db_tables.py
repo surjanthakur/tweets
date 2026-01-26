@@ -10,14 +10,14 @@ from datetime import datetime, timezone
 # User table
 # =========================
 class User(SQLModel, table=True):
-    user_id: Annotated[
-        UUID,
+    user_id: UUID = (
         Field(
-            default_factory=uuid.uuid4,
             primary_key=True,
+            default_factory=uuid.uuid4,
             nullable=False,
         ),
-    ]
+    )
+
     handle_name: Annotated[
         str,
         Field(
@@ -37,9 +37,7 @@ class User(SQLModel, table=True):
         nullable=False,
     )
 
-    profile: "Profile" = Relationship(
-        back_populates="user", sa_relationship_kwargs={"cascade", "all ,delete"}
-    )
+    profile: "Profile" = Relationship(back_populates="user")
 
     @field_validator("email", mode="before")
     @classmethod
@@ -62,24 +60,22 @@ class User(SQLModel, table=True):
 # Profile table
 # =========================
 class Profile(SQLModel, table=True):
-    profile_id: Annotated[
-        UUID,
+    profile_id: UUID = (
         Field(
             default_factory=uuid.uuid4,
             primary_key=True,
             nullable=False,
         ),
-    ]
+    )
 
-    user_id: Annotated[
-        UUID,
+    user_id: UUID = (
         Field(
             foreign_key="user.user_id",
             nullable=False,
             unique=True,
             ondelete="CASCADE",
         ),
-    ]
+    )
 
     name: Annotated[str, Field(..., min_length=3, max_length=30)]
     profession: Annotated[str, Field(..., min_length=3, max_length=30)]
@@ -92,33 +88,28 @@ class Profile(SQLModel, table=True):
     )
 
     user: "User" = Relationship(back_populates="profile")
-    tweets: List["Tweet"] = Relationship(
-        back_populates="profile",
-        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
-    )
+    tweets: List["Tweet"] = Relationship(back_populates="profile")
 
 
 # =========================
 # Tweet table
 # =========================
 class Tweet(SQLModel, table=True):
-    tweet_id: Annotated[
-        UUID,
+    tweet_id: UUID = (
         Field(
             default_factory=uuid.uuid4,
             primary_key=True,
             nullable=False,
         ),
-    ]
+    )
 
-    profile_id: Annotated[
-        UUID,
+    profile_id: UUID = (
         Field(
             foreign_key="profile.profile_id",
             nullable=False,
             ondelete="CASCADE",
         ),
-    ]
+    )
 
     content: Annotated[str, Field(..., min_length=10, max_length=250)]
     like_count: Annotated[int, Field(default=0)]
@@ -130,42 +121,36 @@ class Tweet(SQLModel, table=True):
     )
 
     profile: "Profile" = Relationship(back_populates="tweets")
-    comments: List["Comment"] = Relationship(
-        back_populates="tweet",
-        sa_relationship_kwargs={"cascade": "all, delete-orphan"},
-    )
+    comments: List["Comment"] = Relationship(back_populates="tweet")
 
 
 # =========================
 # Comment table
 # =========================
 class Comment(SQLModel, table=True):
-    comment_id: Annotated[
-        UUID,
+    comment_id: UUID = (
         Field(
             default_factory=uuid.uuid4,
             primary_key=True,
             nullable=False,
         ),
-    ]
+    )
 
-    tweet_id: Annotated[
-        UUID,
+    tweet_id: UUID = (
         Field(
             foreign_key="tweet.tweet_id",
             nullable=False,
             ondelete="CASCADE",
         ),
-    ]
+    )
 
-    user_id: Annotated[
-        UUID,
+    user_id: UUID = (
         Field(
             foreign_key="user.user_id",
             nullable=False,
             ondelete="CASCADE",
         ),
-    ]
+    )
 
     content: Annotated[str, Field(..., min_length=1, max_length=150)]
 
