@@ -1,3 +1,3 @@
 import TweetForm from "./tweetForm";
-
-export { TweetForm };
+import ProfilePage from "./profilePage";
+export { TweetForm, ProfilePage };

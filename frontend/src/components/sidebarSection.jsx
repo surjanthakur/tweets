@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import {
   Home,
   Search,
@@ -38,7 +39,7 @@ export default function SidebarSection() {
           <nav className="sidebar-nav">
             <ul>
               {navItems.map((item) => (
-                <li key={item.name}>
+                <NavLink key={item.name} to={item.path}>
                   <button
                     className={`nav-item ${active === item.name ? "active" : ""}`}
                     onClick={() => setActive(item.name)}
@@ -46,7 +47,7 @@ export default function SidebarSection() {
                     <item.icon size={28} strokeWidth={2} />
                     <span className="nav-text">{item.name}</span>
                   </button>
-                </li>
+                </NavLink>
               ))}
             </ul>
           </nav>

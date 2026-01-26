@@ -3,8 +3,8 @@ import "./layout.css";
 export default function MainLayout() {
   return (
     <div className="app-layout">
-      <SidebarSection className="sidebar" />
-      <HomeFeed className="feed" />
+      <SidebarSection />
+      <HomeFeed />
     </div>
   );
 }

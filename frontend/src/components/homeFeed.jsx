@@ -1,7 +1,9 @@
+import { Outlet } from "react-router-dom";
+import "./homeFeed.css";
 export default function HomeFeed() {
   return (
-    <section>
-      <h1>this is home feed</h1>
-    </section>
+    <main cladssName="home-feed">
+      <Outlet />
+    </main>
   );
 }
