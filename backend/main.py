@@ -3,6 +3,7 @@ from router import profile, tweet
 from contextlib import asynccontextmanager
 import logging
 from db.db_connection import create_db_tables
+from fastapi.middleware.cors import CORSMiddleware
 
 
 logging.basicConfig(level=logging.INFO)
@@ -34,6 +35,14 @@ app = FastAPI(
     openapi_url=None if PRODUCTION else "/openapi.json",
 )
 
+origins = ["http://localhost:5173"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_methods=["*"],
+    max_age=600,
+)
 
 app.include_router(router=profile.profile_router)
 app.include_router(router=tweet.tweet_router)
