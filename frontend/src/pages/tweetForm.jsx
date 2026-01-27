@@ -41,21 +41,13 @@ export default function TweetForm({ isOpen, onClose, onPost }) {
           <button className="close-btn" onClick={onClose} aria-label="Close">
             <X size={24} />
           </button>
+          <h2 className="text-white font-bold">adding tweet</h2>
           <div className="drafts-link">Drafts</div>
         </div>
 
         {/* Main content */}
         <div className="modal-body">
           <div className="tweet-form">
-            {/* Profile picture */}
-            <div className="avatar-wrapper">
-              <img
-                src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=120"
-                alt="Your profile"
-                className="user-avatar"
-              />
-            </div>
-
             <div className="form-content">
               {/* Reply visibility dropdown */}
               <button className="reply-setting-btn">

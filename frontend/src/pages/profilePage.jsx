@@ -2,7 +2,8 @@
 import { ArrowLeft, MapPin, CalendarDays } from "lucide-react";
 import { Link } from "react-router-dom";
 import "./profile.css";
-import { ProfileForm } from "./index";
+import { ProfileEditForm } from "./index";
+import { useState, useEffect } from "react";
 
 export default function ProfilePage() {
   const [editFormOpen, setEditFormOpen] = useState(false);
@@ -58,14 +59,12 @@ export default function ProfilePage() {
             </div>
 
             <div className="action-row">
-              <Link to="/profile/editForm">
-                <button
-                  onClick={() => setEditFormOpen(true)}
-                  className="edit-profile-btn"
-                >
-                  Edit profile
-                </button>
-              </Link>
+              <button
+                onClick={() => setEditFormOpen(true)}
+                className="edit-profile-btn"
+              >
+                Edit profile
+              </button>
             </div>
 
             <div className="profile-meta">
@@ -125,7 +124,7 @@ export default function ProfilePage() {
         ))}
       </div> */}
       </div>
-      <ProfileForm
+      <ProfileEditForm
         isOpen={editFormOpen}
         onClose={() => setEditFormOpen(false)}
       />

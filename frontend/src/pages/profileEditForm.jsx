@@ -1,8 +1,8 @@
 import "./profileform.css";
 import { useEffect, useRef, useState } from "react";
-import { X, Image as ImageIcon } from "lucide-react";
+import { X } from "lucide-react";
 
-export default function ProfileForm({ onClose, isOpen }) {
+export default function ProfileEditForm({ onClose, isOpen }) {
   const [text, setText] = useState("");
   const textareaRef = useRef(null);
   // Auto-grow textarea
@@ -50,9 +50,7 @@ export default function ProfileForm({ onClose, isOpen }) {
         <div className="profile-body">
           {/* Image URL */}
           <div className="form-group">
-            <label>
-              Profile Image URL <ImageIcon size={20} />
-            </label>
+            <label>Profile Image URL</label>
             <input type="url" placeholder="https://example.com/photo.jpg" />
           </div>
 
