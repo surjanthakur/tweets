@@ -20,61 +20,6 @@ export default function ProfilePage() {
       "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200", // dark spiderman-like city
   };
 
-  // Mock posts (replace with real data / infinite scroll later)
-  const posts = [
-    {
-      id: 1,
-      content:
-        `so rainy weather today no electricity still working with 70% battery.\n` +
-        `> uploop for async fast speed\n` +
-        `> apply some production grade code .\n` +
-        `> uploops for async fast speed.\n` +
-        `> api's versioning , lets touch the milestone 😊.`,
-      time: "11h",
-    },
-    {
-      id: 1,
-      content:
-        `so rainy weather today no electricity still working with 70% battery.\n` +
-        `> uploop for async fast speed\n` +
-        `> apply some production grade code .\n` +
-        `> uploops for async fast speed.\n` +
-        `> api's versioning , lets touch the milestone 😊.`,
-      time: "11h",
-    },
-    {
-      id: 1,
-      content:
-        `so rainy weather today no electricity still working with 70% battery.\n` +
-        `> uploop for async fast speed\n` +
-        `> apply some production grade code .\n` +
-        `> uploops for async fast speed.\n` +
-        `> api's versioning , lets touch the milestone 😊.`,
-      time: "11h",
-    },
-    {
-      id: 1,
-      content:
-        `so rainy weather today no electricity still working with 70% battery.\n` +
-        `> uploop for async fast speed\n` +
-        `> apply some production grade code .\n` +
-        `> uploops for async fast speed.\n` +
-        `> api's versioning , lets touch the milestone 😊.`,
-      time: "11h",
-    },
-    {
-      id: 1,
-      content:
-        `so rainy weather today no electricity still working with 70% battery.\n` +
-        `> uploop for async fast speed\n` +
-        `> apply some production grade code .\n` +
-        `> uploops for async fast speed.\n` +
-        `> api's versioning , lets touch the milestone 😊.`,
-      time: "11h",
-    },
-    // Add more as needed
-  ];
-
   return (
     <div className="profile-page">
       {/* Header / Top bar */}
@@ -151,8 +96,8 @@ export default function ProfilePage() {
         <button className="tab">Media</button>
         <button className="tab">Likes</button>
       </nav>
-
-      {/* Posts feed */}
+      {/* 
+      Posts feed
       <div className="posts-list">
         {posts.map((post) => (
           <article key={post.id} className="tweet-card">
@@ -168,7 +113,7 @@ export default function ProfilePage() {
             <div className="tweet-content">{post.content}</div>
           </article>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }

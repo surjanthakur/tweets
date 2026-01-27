@@ -1,7 +1,33 @@
 @import "tailwindcss";
 
-.app-wrapper {
+/* Root layout */
+.app-layout {
   display: flex;
   justify-content: center;
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
   height: 100vh;
+  padding: 0 1rem;
+}
+
+/* Sidebar wrapper */
+.box-1 {
+  width: 275px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  flex-shrink: 0;
+}
+
+/* home feed wrapper */
+.box-2 {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.box-2 {
+  scroll-behavior: smooth;
 }
