@@ -1,5 +1,5 @@
 import "./App.css";
-import { SidebarSection, HomeFeed } from "./components/index";
+import { SidebarSection } from "./components/index";
 import { Outlet } from "react-router-dom";
 
 function App() {
