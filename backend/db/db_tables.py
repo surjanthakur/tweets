@@ -69,6 +69,7 @@ class Profile(SQLModel, table=True):
 
     name: Annotated[str, Field(..., min_length=3, max_length=30)]
     profession: Annotated[str, Field(..., min_length=3, max_length=30)]
+    location: Annotated[str, Field(..., min_length=3, max_length=50)]
     bio: Annotated[str, Field(..., min_length=10, max_length=150)]
     profile_picture: Annotated[str, Field(...)]
 

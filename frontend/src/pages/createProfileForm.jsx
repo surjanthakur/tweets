@@ -12,10 +12,10 @@ const CreateProfileForm = () => {
   } = useForm({
     defaultValues: {
       name: "",
-      bio: "",
       profession: "",
+      bio: "",
       location: "",
-      profilePicture: "",
+      profile_picture: "",
     },
     mode: "onChange",
   });
@@ -30,7 +30,7 @@ const CreateProfileForm = () => {
     formData.append("bio", data.bio.trim());
     formData.append("profession", data.profession.trim());
     formData.append("location", data.location.trim());
-    formData.append("profilePicture", data.profilePicture.trim());
+    formData.append("profile_picture", data.profile_picture.trim());
 
     try {
       // Replace with your actual API call
@@ -47,7 +47,7 @@ const CreateProfileForm = () => {
       setValue("bio", "");
       setValue("profession", "");
       setValue("location", "");
-      setValue("profilePicture", "");
+      setValue("profile_picture", "");
     } catch (error) {
       console.error("Error creating profile:", error);
       alert("Failed to create profile. Please try again.");
@@ -151,19 +151,19 @@ const CreateProfileForm = () => {
 
           {/* image url */}
           <div className="form-group">
-            <label htmlFor="profilePicture">profile image url</label>
+            <label htmlFor="profile_picture">profile image url</label>
             <input
-              id="profilePicture"
+              id="profile_picture"
               type="url"
               placeholder="https://example.com/your-image.jpg"
               className="form-input"
-              {...register("profilePicture", {
+              {...register("profile_picture", {
                 required: "image url is required",
               })}
             />
-            {errors.profilePicture && (
+            {errors.profile_picture && (
               <span className="error-message">
-                {errors.profilePicture.message}
+                {errors.profile_picture.message}
               </span>
             )}
           </div>
