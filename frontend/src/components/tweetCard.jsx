@@ -1,4 +1,4 @@
-import "./tweetcard.css";
+import "./css/tweetcard.css";
 import { useState } from "react";
 import { MessageCircle, Heart } from "lucide-react";
 

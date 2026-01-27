@@ -9,7 +9,7 @@ import {
   User,
   MoreHorizontal,
 } from "lucide-react";
-import "./Sidebar.css";
+import "./css/sidebar.css";
 import { TweetForm } from "../pages/index";
 
 export default function SidebarSection() {
