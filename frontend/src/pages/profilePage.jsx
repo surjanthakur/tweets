@@ -55,7 +55,9 @@ export default function ProfilePage() {
           </div>
 
           <div className="action-row">
-            <button className="edit-profile-btn">Edit profile</button>
+            <Link to="/profile/editForm">
+              <button className="edit-profile-btn">Edit profile</button>
+            </Link>
           </div>
 
           <div className="profile-meta">

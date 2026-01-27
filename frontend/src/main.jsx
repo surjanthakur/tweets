@@ -9,12 +9,13 @@ import {
   Route,
 } from "react-router-dom";
 
-import { ProfilePage } from "./pages/index.js";
+import { ProfilePage, ProfileForm } from "./pages/index.js";
 
 const my_router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/profile/editForm" element={<ProfileForm />} />
     </Route>,
   ),
 );

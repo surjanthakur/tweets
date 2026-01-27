@@ -1,3 +1,4 @@
 import TweetForm from "./tweetForm";
 import ProfilePage from "./profilePage";
-export { TweetForm, ProfilePage };
+import ProfileForm from "./profileForm";
+export { TweetForm, ProfilePage, ProfileForm };
