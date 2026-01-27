@@ -40,6 +40,8 @@ origins = ["http://localhost:5173"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    alllow_credentials=True,
+    allow_headers=["*"],
     allow_methods=["*"],
     max_age=600,
 )
