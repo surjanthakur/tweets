@@ -1,7 +1,7 @@
 // src/components/TweetForm.jsx
 import { useState, useRef, useEffect } from "react";
 import { X, Image as ImageIcon } from "lucide-react";
-import "./tweetform.css";
+import "./css/tweetform.css";
 
 export default function TweetForm({ isOpen, onClose, onPost }) {
   const [text, setText] = useState("");

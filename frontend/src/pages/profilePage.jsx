@@ -1,7 +1,7 @@
 // src/components/Profile.jsx
 import { ArrowLeft, MapPin, CalendarDays } from "lucide-react";
 import { Link } from "react-router-dom";
-import "./profilePage.css";
+import "./css/profilePage.css";
 import { ProfileEditForm } from "./index";
 import { useState, useEffect } from "react";
 
