@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import "./profile.css";
 
 export default function ProfilePage() {
+  const [editFormOpen, setEditFormOpen] = useState(false);
   // In real app these would come from auth context / API
   const user = {
     displayName: "epicSurjan",
@@ -56,7 +57,12 @@ export default function ProfilePage() {
 
           <div className="action-row">
             <Link to="/profile/editForm">
-              <button className="edit-profile-btn">Edit profile</button>
+              <button
+                onClick={() => setEditFormOpen(true)}
+                className="edit-profile-btn"
+              >
+                Edit profile
+              </button>
             </Link>
           </div>
 

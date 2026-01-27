@@ -1,7 +1,8 @@
 import "./profileform.css";
 import { useEffect, useRef, useState } from "react";
+import { X, Image as ImageIcon } from "lucide-react";
 
-export default function ProfileForm({ onClose, onSave }) {
+export default function ProfileForm({ onClose, isOpen }) {
   const [text, setText] = useState("");
   const textareaRef = useRef(null);
   // Auto-grow textarea
@@ -18,16 +19,29 @@ export default function ProfileForm({ onClose, onSave }) {
     window.addEventListener("resize", resetHeight);
     return () => window.removeEventListener("resize", resetHeight);
   }, [text]);
+
+  if (!isOpen) return null;
+
+  const handleSave = () => {
+    if (!text.trim()) return;
+    setText("");
+    onClose?.();
+  };
+
   return (
-    <div className="profile-overlay">
-      <div className="profile-modal">
+    <div className="profile-overlay" onClick={onClose}>
+      <div className="profile-modal" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="profile-header">
-          <button className="close-btn" onClick={onClose}>
-            ✕
+          <button className="close-btn" onClick={onClose} aria-label="Close">
+            <X size={24} />
           </button>
           <h2>Edit profile</h2>
-          <button className="save-btn" onClick={onSave}>
+          <button
+            className={`save-btn ${text.trim() ? "active" : ""}`}
+            onClick={handleSave}
+            disabled={!text.trim()}
+          >
             Save
           </button>
         </div>
