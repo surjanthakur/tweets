@@ -17,7 +17,6 @@ export default function SidebarSection() {
   const [showTweetForm, setShowTweetForm] = useState(false);
 
   const navItems = [
-    { name: "Home", icon: Home, path: "/" },
     { name: "Explore", icon: Search, path: "/explore" },
     { name: "Notifications", icon: Bell, path: "/notifications" },
     { name: "Chat", icon: Mail, path: "/messages" },
@@ -38,6 +37,13 @@ export default function SidebarSection() {
           {/* Navigation */}
           <nav className="sidebar-nav">
             <ul>
+              {/* get all tweets if press the home button */}
+              <button
+                className={`nav-item ${active === "Home" ? "active" : ""}`}
+              >
+                <Home size={28} strokeWidth={2} />
+                <span className="nav-text">Home</span>
+              </button>
               {navItems.map((item) => (
                 <NavLink key={item.name} to={item.path}>
                   <button
@@ -52,7 +58,7 @@ export default function SidebarSection() {
             </ul>
           </nav>
 
-          {/* Post button */}
+          {/* create new tweet if press the post pop up tweetform */}
           <button
             className="post-button"
             onClick={() => setShowTweetForm(true)}
