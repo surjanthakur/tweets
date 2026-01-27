@@ -1,3 +1,4 @@
 import SidebarSection from "./sidebarSection";
 import HomeFeed from "./homeFeed";
-export { SidebarSection, HomeFeed };
+import TweetCard from "./tweetCard";
+export { SidebarSection, HomeFeed, TweetCard };

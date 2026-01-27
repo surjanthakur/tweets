@@ -51,7 +51,7 @@ export default function TweetForm({ isOpen, onClose, onPost }) {
             <div className="form-content">
               {/* Reply visibility dropdown */}
               <button className="reply-setting-btn">
-                Everyone <span className="arrow">▼</span>
+                Everyone can read&nbsp;<span className="arrow">🌏</span>
               </button>
 
               {/* Textarea */}

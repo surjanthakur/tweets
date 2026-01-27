@@ -1,5 +1,6 @@
 import "./App.css";
 import { SidebarSection, HomeFeed } from "./components/index";
+import { Outlet } from "react-router-dom";
 
 function App() {
   return (
@@ -9,7 +10,7 @@ function App() {
           <SidebarSection />
         </div>
         <div className="box-2">
-          <HomeFeed />
+          <Outlet />
         </div>
       </div>
     </>

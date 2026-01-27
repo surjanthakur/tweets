@@ -1,4 +1,4 @@
-import "./profileform.css";
+import "./profileeditform.css";
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 
