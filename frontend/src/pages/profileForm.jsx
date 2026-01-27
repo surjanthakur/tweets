@@ -50,7 +50,9 @@ export default function ProfileForm({ onClose, isOpen }) {
         <div className="profile-body">
           {/* Image URL */}
           <div className="form-group">
-            <label>Profile Image URL</label>
+            <label>
+              Profile Image URL <ImageIcon size={20} />
+            </label>
             <input type="url" placeholder="https://example.com/photo.jpg" />
           </div>
 
