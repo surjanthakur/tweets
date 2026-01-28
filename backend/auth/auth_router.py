@@ -17,8 +17,10 @@ from sqlmodel import select
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 
+# create user
 @auth_router.post("/register")
 async def create_user(user_data: request_user, db: AsyncSession = Depends(get_session)):
+    print("HANDLE:", user_data.handle_name)
     result = await db.exec(
         select(User).where(User.handle_name == user_data.handle_name)
     )

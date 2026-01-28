@@ -47,8 +47,7 @@ session_maker = async_sessionmaker(
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
     async with session_maker() as session:
         try:
-            async with session.begin():
-                yield session
+            yield session
         except SQLAlchemyError as err:
             logger.error(f"database current session error: {err}")
             await session.rollback()
