@@ -2,6 +2,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from db.db_tables import Profile
 from db.db_connection import get_session
 import logging
+from models.validation_models import RequestProfile
 from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlmodel import select
 from sqlalchemy.orm import selectinload
@@ -62,7 +63,7 @@ async def get_profile(
     summary="Create profile for the authenticated user",
 )
 async def create_profile(
-    profile_data: request_profile,
+    profile_data: RequestProfile,
     curr_user_id: UUID = Path(..., title="profile username name"),
     db: AsyncSession = Depends(get_session),
 ):
@@ -94,7 +95,7 @@ async def create_profile(
 # edit profile id user has a profile
 @profile_router.put("/edit/{curr_user_id}")
 async def edit_profile(
-    profile_data: request_profile,
+    profile_data: RequestProfile,
     curr_user_id: UUID = Path(..., title="profile username"),
     db: AsyncSession = Depends(get_session),
 ):

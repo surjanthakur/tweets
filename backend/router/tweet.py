@@ -7,6 +7,7 @@ from sqlmodel import select
 from sqlalchemy.orm import selectinload
 from uuid import UUID
 from typing import List
+from models.validation_models import RequestTweet
 
 tweet_router = APIRouter(tags=["tweets"], prefix="/tweet")
 
@@ -60,7 +61,7 @@ async def get_tweet_by_id(tweet_id: UUID, db: AsyncSession = Depends(get_session
 # create new tweet
 @tweet_router.post("/create/{curr_user_id}", status_code=status.HTTP_201_CREATED)
 async def create_new_tweet(
-    tweet_data: request_tweet,
+    tweet_data: RequestTweet,
     curr_user_id: UUID,
     db: AsyncSession = Depends(get_session),
 ):
