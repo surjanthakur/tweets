@@ -1,5 +1,4 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
-from models.pydantic_Validation import request_profile, response_profile
 from db.db_tables import Profile
 from db.db_connection import get_session
 import logging
@@ -24,7 +23,6 @@ async def get_profile_db(db: AsyncSession, curr_user_id: UUID) -> Profile | None
 @profile_router.get(
     "/{curr_user_id}",
     status_code=status.HTTP_200_OK,
-    response_model=response_profile,
     summary="get profile by id",
 )
 async def get_profile(

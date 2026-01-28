@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 import jwt
 from typing import Annotated
 from jwt.exceptions import InvalidTokenError
-from .pydantic_token import TokenData
+from .auth_model import TokenData
 
 load_dotenv()
 
@@ -40,9 +40,9 @@ async def verify_password(plain_pass: str, hash_pass: str) -> bool:
 
 
 # get user by handle name
-async def get_user_by_handle_name(handle_name: str, password: str, db: AsyncSession):
+async def get_user_by_handle_name(username: str, password: str, db: AsyncSession):
     try:
-        result = await db.exec(select(User).where(User.handle_name == handle_name))
+        result = await db.exec(select(User).where(User.username == username))
         my_user = result.first()
         if not my_user:
             return False
@@ -81,19 +81,20 @@ async def get_current_user(
     )
     try:
         payload = jwt.decode(token, secret_key, algorithms=[algorithm])
-        handle_name = payload.get("sub")
-        if handle_name is None:
+        username = payload.get("sub")
+        if username is None:
             raise credentials_exception
-        token_data = TokenData(handle_name=handle_name)
+        token_data = TokenData(username=username)
     except InvalidTokenError:
         raise credentials_exception
 
-    curr_user = get_user_by_handle_name(handle_name=token_data.handle_name, db=db)
+    curr_user = get_user_by_handle_name(username=token_data.username, db=db)
     if curr_user in None:
         raise credentials_exception
     return curr_user
 
 
+# return active user info
 async def get_current_active_user(
     current_user: Annotated[User, Depends(get_current_user)],
 ):

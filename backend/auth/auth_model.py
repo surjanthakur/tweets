@@ -8,11 +8,11 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    handle_name: str | None = None
+    username: str | None = None
 
 
 class request_user(BaseModel):
-    handle_name: Annotated[
+    username: Annotated[
         str,
         Field(
             ...,

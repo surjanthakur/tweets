@@ -4,7 +4,7 @@ from db.db_connection import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
-from .pydantic_token import Token, request_user
+from .auth_model import Token, request_user
 from .auth_service import (
     create_access_token,
     get_user_by_handle_name,
@@ -20,10 +20,8 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
 # create user
 @auth_router.post("/register")
 async def create_user(user_data: request_user, db: AsyncSession = Depends(get_session)):
-    print("HANDLE:", user_data.handle_name)
-    result = await db.exec(
-        select(User).where(User.handle_name == user_data.handle_name)
-    )
+    print("HANDLE:", user_data.username)
+    result = await db.exec(select(User).where(User.username == user_data.username))
     exist_user = result.first()
     if exist_user:
         raise HTTPException(
@@ -32,7 +30,7 @@ async def create_user(user_data: request_user, db: AsyncSession = Depends(get_se
         )
     hash_password = get_hashed_password(user_data.password)
     new_user = User(
-        handle_name=user_data.handle_name,
+        handle_name=user_data.username,
         email=user_data.email,
         password=hash_password,
     )
@@ -59,6 +57,6 @@ async def login_user_for_accessToken(
         )
     access_token_expires = timedelta(minutes=30)
     access_token = create_access_token(
-        data={"sub": my_user.handle_name}, expires_token_time=access_token_expires
+        data={"sub": my_user.username}, expires_token_time=access_token_expires
     )
     return Token(access_token=access_token, token_type="bearer")

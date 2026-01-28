@@ -1,5 +1,4 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
-from models.pydantic_Validation import request_tweet, response_tweet
 from db.db_tables import Tweet, Profile
 from db.db_connection import get_session
 import logging
@@ -22,9 +21,7 @@ async def get_tweet_db(db: AsyncSession, curr_tweet_id: UUID) -> Tweet | None:
 
 
 # get all tweets
-@tweet_router.get(
-    "/", status_code=status.HTTP_200_OK, response_model=List[response_tweet]
-)
+@tweet_router.get("/", status_code=status.HTTP_200_OK)
 async def get_all_tweets(db: AsyncSession = Depends(get_session)):
     try:
         result = await db.exec(select(Tweet).options(selectinload(Tweet.profile)))
