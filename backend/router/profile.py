@@ -2,10 +2,9 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from db.db_tables import Profile
 from db.db_connection import get_session
 from models.validation_models import RequestProfile
-from fastapi import APIRouter, HTTPException, status, Depends, Path
+from fastapi import APIRouter, HTTPException, status, Depends
 from sqlmodel import select
 from sqlalchemy.orm import selectinload
-from uuid import UUID
 from auth.auth_service import get_current_user
 from db.db_tables import User
 
@@ -42,7 +41,7 @@ async def get_profile(
         )
 
 
-# create new post
+# create new profile
 @profile_router.post(
     "/create",
     status_code=status.HTTP_201_CREATED,
@@ -74,14 +73,17 @@ async def create_profile(
         raise
 
 
-# edit profile id user has a profile
-@profile_router.put("/edit/{curr_user_id}")
+# edit profile
+@profile_router.put("/edit")
 async def edit_profile(
     profile_data: RequestProfile,
-    curr_user_id: UUID = Path(..., title="profile username"),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_session),
 ):
-    my_profile = await get_profile_db(db, curr_user_id)
+    statement = await db.exec(
+        select(Profile).where(Profile.user_id == current_user.user_id)
+    )
+    my_profile = statement.first()
     if not my_profile:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -95,13 +97,6 @@ async def edit_profile(
         db.add(my_profile)
         await db.commit()
         await db.refresh(my_profile)
-        return {"message": f"Profile {my_profile.name} edited successfully."}
+        return my_profile
     except HTTPException:
         raise
-    except Exception as err:
-        await db.rollback()
-        logger.error(f"error while editing profile:{err}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="error while editing profile",
-        )

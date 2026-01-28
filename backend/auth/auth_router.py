@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from .auth_model import Token, request_user
 from .auth_service import (
     create_access_token,
-    get_user_by_handle_name,
+    Authenticate_user,
     get_hashed_password,
 )
 from datetime import timedelta
@@ -23,7 +23,7 @@ async def login_user_for_accessToken(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session_db: AsyncSession = Depends(get_session),
 ) -> Token:
-    my_user = await get_user_by_handle_name(
+    my_user = await Authenticate_user(
         username=form_data.username, password=form_data.password, db=session_db
     )
     if not my_user:
@@ -34,7 +34,8 @@ async def login_user_for_accessToken(
         )
     access_token_expires = timedelta(minutes=30)
     access_token = create_access_token(
-        data={"sub": my_user.username}, expires_token_time=access_token_expires
+        data={"sub": my_user.username},
+        expires_token_time=access_token_expires,
     )
     return Token(access_token=access_token, token_type="bearer")
 

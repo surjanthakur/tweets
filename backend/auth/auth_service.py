@@ -37,8 +37,8 @@ async def verify_password(plain_pass: str, hash_pass: str) -> bool:
         return False
 
 
-# get user by handle name
-async def get_user_by_handle_name(
+# authenticate user
+async def Authenticate_user(
     username: str, password: str, db: AsyncSession = Depends(get_session)
 ):
     try:
@@ -88,7 +88,8 @@ async def get_current_user(
     except InvalidTokenError:
         raise credentials_exception
 
-    curr_user = get_user_by_handle_name(username=token_data.username, db=db)
+    statement = await db.exec(select(User).where(User.username == token_data.username))
+    curr_user = statement.first()
     if curr_user in None:
         raise credentials_exception
     return curr_user
