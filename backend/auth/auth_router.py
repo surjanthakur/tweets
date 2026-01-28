@@ -1,11 +1,10 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from db.db_tables import User
 from db.db_connection import get_session
-from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
-from .pydantic_token import Token
+from .pydantic_token import Token, request_user
 from .auth_service import create_access_token, get_user_by_handle_name
 from datetime import timedelta
 
@@ -13,14 +12,23 @@ from datetime import timedelta
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 
+@auth_router.post("/register")
+async def create_user(user_data: request_user, db: AsyncSession = Depends(get_session)):
+    new_user = User(**user_data.model_dump(exclude_unset=True))
+    db.add(new_user)
+    await db.commit()
+    await db.refresh(new_user)
+    return {"message": "User created successfully", "user_id": new_user.user_id}
+
+
 # login the user
 @auth_router.post("/login")
 async def login_user_for_accessToken(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    db: AsyncSession = Depends(get_session),
+    session_db: AsyncSession = Depends(get_session),
 ) -> Token:
     my_user = await get_user_by_handle_name(
-        handle_name=form_data.username, password=form_data.password
+        handle_name=form_data.username, password=form_data.password, db=session_db
     )
     if not my_user:
         raise HTTPException(

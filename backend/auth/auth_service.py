@@ -23,6 +23,11 @@ algorithm = os.getenv("ALGORITHM")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
+# get hashed password
+def get_hashed_password(password: str) -> str:
+    return hashpw(password.encode("utf-8"), gensalt()).decode("utf-8")
+
+
 # verify password and return true/false
 async def verify_password(plain_pass: str, hash_pass: str) -> bool:
     try:
@@ -35,11 +40,7 @@ async def verify_password(plain_pass: str, hash_pass: str) -> bool:
 
 
 # get user by handle name
-async def get_user_by_handle_name(
-    handle_name: str,
-    password: str,
-    db: AsyncSession = Depends(get_session),
-):
+async def get_user_by_handle_name(handle_name: str, password: str, db: AsyncSession):
     try:
         result = await db.exec(select(User).where(User.handle_name == handle_name))
         my_user = result.first()
