@@ -1,7 +1,6 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from db.db_tables import Profile
 from db.db_connection import get_session
-import logging
 from models.validation_models import RequestProfile
 from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlmodel import select
@@ -10,23 +9,14 @@ from uuid import UUID
 from auth.auth_service import get_current_user
 from db.db_tables import User
 
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
-
 profile_router = APIRouter(prefix="/profile", tags=["Profile"])
 
 
-# Get profile by handle name helper function
-async def get_profile_db(db: AsyncSession, curr_user_id: UUID) -> Profile | None:
-    result = await db.exec(select(Profile).where(Profile.user_id == curr_user_id))
-    return result.first()
-
-
-# Get profile by cuur user
+# Get profile
 @profile_router.get(
     "/me",
     status_code=status.HTTP_200_OK,
-    summary="get profile by id",
+    summary="Get current user's profile",
 )
 async def get_profile(
     db: AsyncSession = Depends(get_session),
@@ -40,55 +30,48 @@ async def get_profile(
         )
         my_profile = result.first()
         if not my_profile:
-            await db.rollback()
-            logger.warning(f"cant find profile with this profile handle")
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="cant find profile with this profile handle name",
+                detail="cant find profile",
             )
         return my_profile
     except Exception as err:
-        logger.error(f"error while getting profile: {err}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"error while getting profile",
+            detail=f"error while getting profile: {err}",
         )
 
 
-# create new_post if user authenticated
+# create new post
 @profile_router.post(
-    "/create/{curr_user_id}",
+    "/create",
     status_code=status.HTTP_201_CREATED,
     summary="Create profile for the authenticated user",
 )
 async def create_profile(
     profile_data: RequestProfile,
-    curr_user_id: UUID = Path(..., title="profile username name"),
     db: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ):
-    my_profile = await get_profile_db(db, curr_user_id)
-    if my_profile:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You already have a profile. Only one profile per user allowed.",
-        )
     try:
-        new_profile = Profile(**profile_data.model_dump(exclude_unset=True))
-        new_profile.user_id = curr_user_id
+        statement = await db.exec(
+            select(Profile).where(Profile.user_id == current_user.user_id)
+        )
+        exist_pofile = statement.first()
+        if exist_pofile:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="You already have a profile. Only one profile per user allowed.",
+            )
+        new_profile = Profile(
+            **profile_data.model_dump(exclude_unset=True), user_id=current_user.user_id
+        )
         db.add(new_profile)
         await db.commit()
         await db.refresh(new_profile)
-        return {"message": f"Profile {new_profile.name} created successfully."}
-
+        return new_profile
     except HTTPException:
         raise
-    except Exception as err:
-        await db.rollback()
-        logger.error(f"error while creating profile:{err}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="error while creating profile",
-        )
 
 
 # edit profile id user has a profile
