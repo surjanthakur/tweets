@@ -11,7 +11,6 @@ from datetime import datetime, timezone
 # =========================
 class User(SQLModel, table=True):
     user_id: UUID = Field(primary_key=True, default_factory=uuid.uuid4, nullable=False)
-
     handle_name: Annotated[
         str,
         Field(
@@ -23,14 +22,12 @@ class User(SQLModel, table=True):
             index=True,
         ),
     ]
-
     email: Annotated[str, Field(..., title="email field", unique=True, index=True)]
     password: Annotated[str, Field(..., title="hashed password field")]
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
-
     profile: "Profile" = Relationship(back_populates="user")
 
     @field_validator("email", mode="before")
