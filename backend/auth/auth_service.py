@@ -6,7 +6,7 @@ from db.db_tables import User
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi import Depends, HTTPException, status
 from sqlmodel import select
-from bcrypt import checkpw, hashpw, gensalt
+from pwdlib import PasswordHash
 from datetime import datetime, timedelta, timezone
 import jwt
 from typing import Annotated
@@ -21,26 +21,26 @@ algorithm = os.getenv("ALGORITHM")
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+password_hash = PasswordHash.recommended()
 
 
 # get hashed password
 def get_hashed_password(password: str) -> str:
-    return hashpw(password.encode("utf-8"), gensalt()).decode("utf-8")
+    return password_hash.hash(password=password)
 
 
 # verify password and return true/false
 async def verify_password(plain_pass: str, hash_pass: str) -> bool:
     try:
-        return checkpw(
-            password=plain_pass.encode("utf-8"),
-            hashed_password=hash_pass.encode("utf-8"),
-        )
+        return password_hash.verify(password=plain_pass, hash=hash_pass)
     except ValueError:
         return False
 
 
 # get user by handle name
-async def get_user_by_handle_name(username: str, password: str, db: AsyncSession):
+async def get_user_by_handle_name(
+    username: str, password: str, db: AsyncSession = Depends(get_session)
+):
     try:
         result = await db.exec(select(User).where(User.username == username))
         my_user = result.first()
@@ -92,12 +92,3 @@ async def get_current_user(
     if curr_user in None:
         raise credentials_exception
     return curr_user
-
-
-# return active user info
-async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)],
-):
-    if current_user is None:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user

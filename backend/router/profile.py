@@ -7,6 +7,8 @@ from fastapi import APIRouter, HTTPException, status, Depends, Path
 from sqlmodel import select
 from sqlalchemy.orm import selectinload
 from uuid import UUID
+from auth.auth_service import get_current_user
+from db.db_tables import User
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -20,21 +22,21 @@ async def get_profile_db(db: AsyncSession, curr_user_id: UUID) -> Profile | None
     return result.first()
 
 
-# Get profile by handle name
+# Get profile by cuur user
 @profile_router.get(
-    "/{curr_user_id}",
+    "/me",
     status_code=status.HTTP_200_OK,
     summary="get profile by id",
 )
 async def get_profile(
-    curr_user_id: UUID = Path(..., title="profile username name"),
     db: AsyncSession = Depends(get_session),
+    current_user: User = Depends(get_current_user),
 ):
     try:
         result = await db.exec(
             select(Profile)
             .options(selectinload(Profile.tweets))
-            .where(Profile.user_id == curr_user_id)
+            .where(Profile.user_id == current_user.user_id)
         )
         my_profile = result.first()
         if not my_profile:
@@ -45,10 +47,7 @@ async def get_profile(
                 detail="cant find profile with this profile handle name",
             )
         return my_profile
-    except HTTPException:
-        raise
     except Exception as err:
-        await db.rollback()
         logger.error(f"error while getting profile: {err}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

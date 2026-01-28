@@ -17,29 +17,6 @@ from sqlmodel import select
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-# create user
-@auth_router.post("/register")
-async def create_user(user_data: request_user, db: AsyncSession = Depends(get_session)):
-    print("HANDLE:", user_data.username)
-    result = await db.exec(select(User).where(User.username == user_data.username))
-    exist_user = result.first()
-    if exist_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="user already exists",
-        )
-    hash_password = get_hashed_password(user_data.password)
-    new_user = User(
-        handle_name=user_data.username,
-        email=user_data.email,
-        password=hash_password,
-    )
-    db.add(new_user)
-    await db.commit()
-    await db.refresh(new_user)
-    return {"message": "User created successfully", "user_id": new_user.user_id}
-
-
 # login the user
 @auth_router.post("/login")
 async def login_user_for_accessToken(
@@ -47,7 +24,7 @@ async def login_user_for_accessToken(
     session_db: AsyncSession = Depends(get_session),
 ) -> Token:
     my_user = await get_user_by_handle_name(
-        handle_name=form_data.username, password=form_data.password, db=session_db
+        username=form_data.username, password=form_data.password, db=session_db
     )
     if not my_user:
         raise HTTPException(
@@ -60,3 +37,25 @@ async def login_user_for_accessToken(
         data={"sub": my_user.username}, expires_token_time=access_token_expires
     )
     return Token(access_token=access_token, token_type="bearer")
+
+
+# create user
+@auth_router.post("/register")
+async def create_user(user_data: request_user, db: AsyncSession = Depends(get_session)):
+    result = await db.exec(select(User).where(User.email == user_data.email))
+    exist_user = result.first()
+    if exist_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="user already exists",
+        )
+    hash_password = get_hashed_password(user_data.password)
+    new_user = User(
+        username=user_data.username,
+        email=user_data.email,
+        password=hash_password,
+    )
+    db.add(new_user)
+    await db.commit()
+    await db.refresh(new_user)
+    return {"message": "User created successfully", "user_id": new_user.user_id}
