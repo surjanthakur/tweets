@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 import logging
 from db.db_connection import create_db_tables
 from fastapi.middleware.cors import CORSMiddleware
+from auth.auth_router import auth_router
 
 
 logging.basicConfig(level=logging.INFO)
@@ -40,11 +41,11 @@ origins = ["http://localhost:5173"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    alllow_credentials=True,
+    allow_credentials=True,
     allow_headers=["*"],
     allow_methods=["*"],
     max_age=600,
 )
-
+app.include_router(router=auth_router)
 app.include_router(router=profile.profile_router)
 app.include_router(router=tweet.tweet_router)
