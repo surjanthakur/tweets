@@ -11,6 +11,7 @@ from .auth_service import (
     get_hashed_password,
 )
 from datetime import timedelta
+from sqlmodel import select
 
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
@@ -18,6 +19,15 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 @auth_router.post("/register")
 async def create_user(user_data: request_user, db: AsyncSession = Depends(get_session)):
+    result = await db.exec(
+        select(User).where(User.handle_name == user_data.handle_name)
+    )
+    exist_user = result.first()
+    if exist_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="user already exists",
+        )
     hash_password = get_hashed_password(user_data.password)
     new_user = User(
         handle_name=user_data.handle_name,
