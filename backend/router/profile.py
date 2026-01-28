@@ -69,8 +69,10 @@ async def create_profile(
         await db.commit()
         await db.refresh(new_profile)
         return new_profile
-    except HTTPException:
-        raise
+    except Exception as err:
+        raise HTTPException(
+            status_code=500, detail=f"error while creating profile: {err}"
+        )
 
 
 # edit profile

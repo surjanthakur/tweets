@@ -30,7 +30,7 @@ def get_hashed_password(password: str) -> str:
 
 
 # verify password and return true/false
-async def verify_password(plain_pass: str, hash_pass: str) -> bool:
+def verify_password(plain_pass: str, hash_pass: str) -> bool:
     try:
         return password_hash.verify(password=plain_pass, hash=hash_pass)
     except ValueError:
@@ -90,6 +90,6 @@ async def get_current_user(
 
     statement = await db.exec(select(User).where(User.username == token_data.username))
     curr_user = statement.first()
-    if curr_user in None:
+    if not curr_user:
         raise credentials_exception
     return curr_user

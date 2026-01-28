@@ -1,9 +1,9 @@
 from sqlmodel import SQLModel, Field, Relationship
-from typing import Annotated, List
+from typing import Annotated, List, Optional
 from pydantic import field_validator
 import uuid
 from uuid import UUID
-from datetime import datetime, timezone
+from datetime import datetime
 
 
 # =========================
@@ -65,10 +65,9 @@ class Profile(SQLModel, table=True):
     )
 
     name: Annotated[str, Field(..., min_length=3, max_length=30)]
-    profession: Annotated[str, Field(..., min_length=3, max_length=30)]
-    location: Annotated[str, Field(..., min_length=3, max_length=50)]
-    bio: Annotated[str, Field(..., min_length=10, max_length=150)]
-    profile_picture: Annotated[str, Field(...)]
+    profession: Annotated[str, Field(..., min_length=3, max_length=50)]
+    location: Annotated[str, Field(..., min_length=3, max_length=100)]
+    bio: Annotated[str, Field(..., min_length=10, max_length=350)]
 
     created_at: datetime = Field(
         default_factory=datetime.utcnow,
