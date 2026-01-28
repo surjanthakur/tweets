@@ -58,7 +58,7 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
             await session.rollback()
             raise
         finally:
-            session.close()
+            await session.close()
 
 
 # Function to create database tables.

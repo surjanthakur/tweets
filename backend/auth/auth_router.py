@@ -5,7 +5,11 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 from .pydantic_token import Token, request_user
-from .auth_service import create_access_token, get_user_by_handle_name
+from .auth_service import (
+    create_access_token,
+    get_user_by_handle_name,
+    get_hashed_password,
+)
 from datetime import timedelta
 
 
@@ -14,7 +18,12 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 @auth_router.post("/register")
 async def create_user(user_data: request_user, db: AsyncSession = Depends(get_session)):
-    new_user = User(**user_data.model_dump(exclude_unset=True))
+    hash_password = get_hashed_password(user_data.password)
+    new_user = User(
+        handle_name=user_data.handle_name,
+        email=user_data.email,
+        password=hash_password,
+    )
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)

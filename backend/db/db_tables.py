@@ -25,7 +25,7 @@ class User(SQLModel, table=True):
     email: Annotated[str, Field(..., title="email field", unique=True, index=True)]
     password: Annotated[str, Field(..., title="hashed password field")]
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=datetime.utcnow,
         nullable=False,
     )
     profile: "Profile" = Relationship(back_populates="user")
@@ -71,7 +71,7 @@ class Profile(SQLModel, table=True):
     profile_picture: Annotated[str, Field(...)]
 
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=datetime.utcnow,
         nullable=False,
     )
 
@@ -98,7 +98,7 @@ class Tweet(SQLModel, table=True):
     content: Annotated[str, Field(..., min_length=10, max_length=250)]
 
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=datetime.utcnow,
         nullable=False,
     )
 
@@ -131,7 +131,7 @@ class Comment(SQLModel, table=True):
     content: Annotated[str, Field(..., min_length=1, max_length=150)]
 
     created_at: datetime = Field(
-        default_factory=lambda: datetime.now(timezone.utc),
+        default_factory=datetime.utcnow,
         nullable=False,
     )
     tweet: "Tweet" = Relationship(back_populates="comments")
