@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 # =========================
 class User(SQLModel, table=True):
     user_id: UUID = Field(primary_key=True, default_factory=uuid.uuid4, nullable=False)
-    handle_name: Annotated[
+    username: Annotated[
         str,
         Field(
             ...,
@@ -39,11 +39,11 @@ class User(SQLModel, table=True):
             raise ValueError("email must end with gmail.com")
         return value
 
-    @field_validator("handle_name", mode="before")
+    @field_validator("username", mode="after")
     @classmethod
     def handle_validator(cls, value: str):
         if not value.startswith("@"):
-            raise ValueError("handle_name must start with @")
+            raise ValueError("username must start with @")
         return value
 
 
