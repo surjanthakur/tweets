@@ -94,7 +94,7 @@ class Tweet(SQLModel, table=True):
         ondelete="CASCADE",
     )
 
-    content: Annotated[str, Field(..., min_length=10, max_length=250)]
+    content: Annotated[str, Field(..., min_length=10, max_length=750)]
 
     created_at: datetime = Field(
         default_factory=datetime.utcnow,

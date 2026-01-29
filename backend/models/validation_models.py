@@ -13,7 +13,7 @@ class RequestProfile(BaseModel):
 
 
 class RequestTweet(BaseModel):
-    content: Annotated[str, Field(..., min_length=10, max_length=250)]
+    content: Annotated[str, Field(..., min_length=10, max_length=750)]
 
     class Config:
         from_attributes = True
