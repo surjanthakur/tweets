@@ -18,7 +18,9 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 # login the user
-@auth_router.post("/login")
+@auth_router.post(
+    "/login", status_code=status.HTTP_200_OK, summary=" login user and get access token"
+)
 async def login_user_for_accessToken(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session_db: AsyncSession = Depends(get_session),
@@ -41,7 +43,9 @@ async def login_user_for_accessToken(
 
 
 # create user
-@auth_router.post("/register")
+@auth_router.post(
+    "/register", status_code=status.HTTP_201_CREATED, summary="Register a new user"
+)
 async def create_user(user_data: request_user, db: AsyncSession = Depends(get_session)):
     result = await db.exec(select(User).where(User.email == user_data.email))
     exist_user = result.first()
@@ -59,4 +63,4 @@ async def create_user(user_data: request_user, db: AsyncSession = Depends(get_se
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)
-    return {"message": "User created successfully", "user_id": new_user.user_id}
+    return {"message": "User created successfully"}
