@@ -45,7 +45,7 @@ session_maker = async_sessionmaker(
 
 # Dependency to get an async database session/transaction.
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    async with session_maker() as session:
+    async with session_maker().begin() as session:
         try:
             yield session
         except SQLAlchemyError as err:

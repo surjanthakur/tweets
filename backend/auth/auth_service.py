@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 import os
 from fastapi.security import OAuth2PasswordBearer
-from db.db_connection import get_session
 from db.db_tables import User
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi import Depends, HTTPException, status
@@ -12,6 +11,7 @@ import jwt
 from typing import Annotated
 from jwt.exceptions import InvalidTokenError
 from .auth_model import TokenData
+from db.db_connection import get_session
 
 load_dotenv()
 
@@ -38,9 +38,7 @@ def verify_password(plain_pass: str, hash_pass: str) -> bool:
 
 
 # authenticate user
-async def Authenticate_user(
-    username: str, password: str, db: AsyncSession = Depends(get_session)
-):
+async def Authenticate_user(username: str, password: str, db: AsyncSession):
     try:
         result = await db.exec(select(User).where(User.username == username))
         my_user = result.first()

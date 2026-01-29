@@ -68,13 +68,10 @@ async def create_new_tweet(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Profile not found create it first",
             )
-        new_tweet = Tweet(
-            **tweet_data.model_dump(exclude_unset=True),
-            profile_id=my_profile.profile_id,
-        )
+        new_tweet = Tweet(content=tweet_data.content, profile_id=my_profile.profile_id)
         db.add(new_tweet)
         await db.commit()
-        await db.refresh()
+        await db.refresh(new_tweet)
         return new_tweet
     except Exception as err:
         raise HTTPException(
@@ -90,18 +87,24 @@ async def delete_tweet(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_session),
 ):
-    statement = await db.exec(select(Tweet).where(Tweet.tweet_id == tweet_id))
-    my_tweet = statement.first()
-    if not my_tweet:
+    try:
+        statement = await db.exec(select(Tweet).where(Tweet.tweet_id == tweet_id))
+        my_tweet = statement.first()
+        if not my_tweet:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Tweet not found",
+            )
+        if my_tweet.profile_id != current_user.profile.profile_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You are not allowed to delete this tweet",
+            )
+        await db.delete(my_tweet)
+        await db.commit()
+        return {"detail": "Tweet deleted successfully"}
+    except Exception as err:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Tweet not found",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error: {err}",
         )
-    if my_tweet.profile_id != current_user.profile.profile_id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You are not allowed to delete this tweet",
-        )
-    await db.delete(my_tweet)
-    await db.commit()
-    return {"detail": "Tweet deleted successfully"}

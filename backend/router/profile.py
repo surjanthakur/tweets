@@ -18,8 +18,8 @@ profile_router = APIRouter(prefix="/profile", tags=["Profile"])
     summary="Get current user's profile",
 )
 async def get_profile(
-    db: AsyncSession = Depends(get_session),
     current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_session),
 ):
     try:
         result = await db.exec(
