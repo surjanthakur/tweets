@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 
 import { ProfilePage, CreateProfileForm } from "./pages/index.js";
+import { AuthProvider } from "./context/loginContex.js";
 
 const my_router = createBrowserRouter(
   createRoutesFromElements(
@@ -22,6 +23,8 @@ const my_router = createBrowserRouter(
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={my_router} />
+    <AuthProvider>
+      <RouterProvider router={my_router} />
+    </AuthProvider>
   </StrictMode>,
 );
