@@ -1,9 +1,9 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
 import "./App.css";
 import { SidebarSection } from "./components/index";
-import { Outlet } from "react-router-dom";
 import { AuthContexProvider } from "./context/loginContext";
-import { useState, useEffect } from "react";
-import axios from "axios";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -20,12 +20,22 @@ function App() {
     }
   }, []);
 
+  // Fetch user when token is available (e.g. after refresh)
+  useEffect(() => {
+    if (token) {
+      currUser(token).finally(() => setIsLoading(false));
+    }
+  }, [token]);
+
   // Fetch current user when token changes
   const currUser = async (authToken) => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/auth/me", {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
+      const response = await axios.get(
+        "http://127.0.0.1:8000/auth/current-user",
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        },
+      );
       if (!response.data) {
         throw new Error("Invalid token");
       }
@@ -36,37 +46,45 @@ function App() {
     }
   };
 
-  // login function
+  // login function (backend expects form-urlencoded per OAuth2PasswordRequestForm)
   const loginUser = async (username, password) => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/auth/login", {
-        username,
-        password,
-      });
+      const params = new URLSearchParams();
+      params.append("username", username);
+      params.append("password", password);
+      const response = await axios.post(
+        "http://127.0.0.1:8000/auth/login",
+        params,
+        {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        },
+      );
       const { access_token } = response.data;
+      if (!access_token) throw new Error("No token in response");
       localStorage.setItem("access_token", access_token);
-
       setToken(access_token);
       await currUser(access_token); // Fetch user after login
     } catch (error) {
-      throw new Error("Invalid credentials");
+      const msg =
+        error.response?.data?.detail || error.message || "Invalid credentials";
+      throw new Error(typeof msg === "string" ? msg : "Invalid credentials");
     }
   };
 
   // User registration
   const createUser = async (username, email, password) => {
     try {
-      const response = await axios.post("http://127.0.0.1:8000/auth/register", {
-        username,
-        email,
-        password,
-      });
-      if (!response.data) {
-        throw new Error("Registration failed");
-      }
+      const response = await axios.post(
+        "http://127.0.0.1:8000/auth/register",
+        { username, email, password },
+        { headers: { "Content-Type": "application/json" } },
+      );
+      if (!response.data) throw new Error("Registration failed");
       setUser(response.data);
+      return true;
     } catch (error) {
-      throw new Error("Registration failed");
+      const msg = error.response?.data?.detail || "Registration failed";
+      throw new Error(typeof msg === "string" ? msg : "Registration failed");
     }
   };
 
