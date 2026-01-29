@@ -1,0 +1,84 @@
+.overlay-container {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 5vh;
+  overflow-y: auto;
+}
+.form-container {
+  width: 400px;
+  margin: 200px auto;
+  padding: 20px;
+  background-color: #000000; /* White background */
+  border-radius: 20px;
+  box-shadow: 0px 4px 10px rgba(118, 117, 117, 0.627); /* Subtle black shadow */
+}
+
+.form-title {
+  text-align: center;
+  color: #ffffff; /* Black text */
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: #000000; /* Black labels */
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #000000; /* Black border */
+  border-radius: 4px;
+  background-color: #ffffff; /* White input bg */
+  color: #000000; /* Black text */
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+input:focus {
+  outline: none;
+  border-color: #333333; /* Darker black on focus */
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2); /* Black focus ring */
+}
+
+.error-message {
+  display: block;
+  color: #a82626; /* Red for errors (usability exception) */
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #2c6ffd; /* Black button bg */
+  color: #ffffff; /* White text */
+  border: none;
+  border-radius: 20px;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #333333; /* Darker black on hover */
+}
+
+.submit-button:disabled {
+  background-color: #cccccc; /* Gray for disabled (still B&W-ish) */
+  cursor: not-allowed;
+}
