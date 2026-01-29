@@ -24,7 +24,6 @@ const CreateProfileForm = () => {
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
-    // Create FormData for file upload
     const formData = new FormData();
     formData.append("name", data.name.trim());
     formData.append("bio", data.bio.trim());

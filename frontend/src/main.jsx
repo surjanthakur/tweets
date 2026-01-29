@@ -15,7 +15,6 @@ import {
   RegisterForm,
   LoginForm,
 } from "./pages/index.js";
-import { AuthProvider } from "./context/loginContex.jsx";
 
 const my_router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,8 +29,6 @@ const my_router = createBrowserRouter(
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AuthProvider>
-      <RouterProvider router={my_router} />
-    </AuthProvider>
+    <RouterProvider router={my_router} />
   </StrictMode>,
 );

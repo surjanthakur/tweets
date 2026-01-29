@@ -6,12 +6,24 @@ const RegisterForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      username: "",
+      email: "",
+      password: "",
+    },
+    mode: "onChange",
+  });
 
-  // Mock submission handler (replace with real API call)
   const onSubmit = (data) => {
-    console.log("Form submitted:", data);
-    // Example: fetch('/api/register', { method: 'POST', body: JSON.stringify(data) });
+    const formData = new formData();
+    formData.append("username", data.username);
+    formData.append("email", data.email);
+    formData.append("password", data.password);
+    try {
+    } catch (err) {
+      console.log("error while register user:", err);
+    }
   };
 
   return (
