@@ -15,7 +15,7 @@ import {
   RegisterForm,
   LoginForm,
 } from "./pages/index.js";
-import { AuthProvider } from "./context/loginContex.js";
+import { AuthProvider } from "./context/loginContex.jsx";
 
 const my_router = createBrowserRouter(
   createRoutesFromElements(
