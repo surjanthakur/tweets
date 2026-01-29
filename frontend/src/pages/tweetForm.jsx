@@ -1,6 +1,7 @@
 // src/components/TweetForm.jsx
-import { useState, useRef, useEffect } from "react";
-import { X, Image as ImageIcon } from "lucide-react";
+import { Image as ImageIcon, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import "./css/tweetform.css";
 
 export default function TweetForm({ isOpen, onClose, onPost }) {
@@ -33,7 +34,8 @@ export default function TweetForm({ isOpen, onClose, onPost }) {
     onClose?.();
   };
 
-  return (
+  // Portal se body mein render — hamesha sabse upar (profile/main content ke peeche nahi)
+  const modalContent = (
     <div className="tweet-modal-overlay" onClick={onClose}>
       <div className="tweet-modal" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
@@ -86,4 +88,6 @@ export default function TweetForm({ isOpen, onClose, onPost }) {
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }

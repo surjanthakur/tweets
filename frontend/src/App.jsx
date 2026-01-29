@@ -65,9 +65,7 @@ function App() {
       setToken(access_token);
       await currUser(access_token); // Fetch user after login
     } catch (error) {
-      const msg =
-        error.response?.data?.detail || error.message || "Invalid credentials";
-      throw new Error(typeof msg === "string" ? msg : "Invalid credentials");
+      throw new Error("Registration failed");
     }
   };
 
@@ -83,8 +81,7 @@ function App() {
       setUser(response.data);
       return true;
     } catch (error) {
-      const msg = error.response?.data?.detail || "Registration failed";
-      throw new Error(typeof msg === "string" ? msg : "Registration failed");
+      throw new Error("Registration failed");
     }
   };
 
