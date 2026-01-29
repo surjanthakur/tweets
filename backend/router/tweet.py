@@ -88,14 +88,18 @@ async def delete_tweet(
     db: AsyncSession = Depends(get_session),
 ):
     try:
-        statement = await db.exec(select(Tweet).where(Tweet.tweet_id == tweet_id))
+        statement = await db.exec(
+            select(Tweet)
+            .options(selectinload(Tweet.profile))
+            .where(Tweet.tweet_id == tweet_id)
+        )
         my_tweet = statement.first()
         if not my_tweet:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Tweet not found",
             )
-        if my_tweet.profile_id != current_user.profile.profile_id:
+        if not my_tweet.profile.user_id == current_user.user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="You are not allowed to delete this tweet",
