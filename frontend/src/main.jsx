@@ -9,7 +9,12 @@ import {
   Route,
 } from "react-router-dom";
 
-import { ProfilePage, CreateProfileForm } from "./pages/index.js";
+import {
+  ProfilePage,
+  CreateProfileForm,
+  RegisterForm,
+  LoginForm,
+} from "./pages/index.js";
 import { AuthProvider } from "./context/loginContex.js";
 
 const my_router = createBrowserRouter(
@@ -17,6 +22,8 @@ const my_router = createBrowserRouter(
     <Route path="/" element={<App />}>
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/create-profile" element={<CreateProfileForm />} />
+      <Route path="/register" element={<RegisterForm />} />
+      <Route path="/login" element={<LoginForm />} />
     </Route>,
   ),
 );
