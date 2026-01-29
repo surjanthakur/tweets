@@ -9,6 +9,7 @@ from .auth_service import (
     create_access_token,
     Authenticate_user,
     get_hashed_password,
+    get_current_user,
 )
 from datetime import timedelta
 from sqlmodel import select
@@ -64,3 +65,9 @@ async def create_user(user_data: request_user, db: AsyncSession = Depends(get_se
     await db.commit()
     await db.refresh(new_user)
     return new_user
+
+
+# get current user
+@auth_router.get("/current-user")
+async def current_user(user: Annotated[User, Depends(get_current_user)]):
+    return user
