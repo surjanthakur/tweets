@@ -12,7 +12,7 @@ tweet_router = APIRouter(tags=["tweets"], prefix="/tweet")
 
 
 # get all tweets
-@tweet_router.get("/", status_code=status.HTTP_200_OK)
+@tweet_router.get("/", status_code=status.HTTP_200_OK, summary="Get all tweets")
 async def get_all_tweets(db: AsyncSession = Depends(get_session)):
     try:
         statement = await db.exec(select(Tweet).options(selectinload(Tweet.profile)))
@@ -30,12 +30,15 @@ async def get_all_tweets(db: AsyncSession = Depends(get_session)):
 
 
 # Get tweet by ID
-@tweet_router.get("/{tweet_id}", status_code=status.HTTP_200_OK)
+@tweet_router.get(
+    "/{tweet_id}", status_code=status.HTTP_200_OK, summary="Get tweet by ID"
+)
 async def get_tweet_by_id(tweet_id: UUID, db: AsyncSession = Depends(get_session)):
     try:
         statement = await db.exec(
             select(Tweet)
             .options(selectinload(Tweet.comments))
+            .options(selectinload(Tweet.profile))
             .where(Tweet.tweet_id == tweet_id)
         )
         my_tweet = statement.first()
@@ -52,7 +55,9 @@ async def get_tweet_by_id(tweet_id: UUID, db: AsyncSession = Depends(get_session
 
 
 # create new tweet
-@tweet_router.post("/create", status_code=status.HTTP_201_CREATED)
+@tweet_router.post(
+    "/create", status_code=status.HTTP_201_CREATED, summary="Create a new tweet"
+)
 async def create_new_tweet(
     tweet_data: RequestTweet,
     current_user: User = Depends(get_current_user),
@@ -81,7 +86,9 @@ async def create_new_tweet(
 
 
 # delete tweet
-@tweet_router.delete("/{tweet_id}/delete")
+@tweet_router.delete(
+    "/{tweet_id}/delete", status_code=status.HTTP_200_OK, summary="Delete a tweet"
+)
 async def delete_tweet(
     tweet_id: UUID,
     current_user: User = Depends(get_current_user),

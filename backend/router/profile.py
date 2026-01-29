@@ -76,7 +76,11 @@ async def create_profile(
 
 
 # edit profile
-@profile_router.put("/edit")
+@profile_router.put(
+    "/edit",
+    status_code=status.HTTP_200_OK,
+    summary="Edit current user's profile",
+)
 async def edit_profile(
     profile_data: RequestProfile,
     current_user: User = Depends(get_current_user),
