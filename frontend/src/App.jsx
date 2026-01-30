@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import "./App.css";
 import { SidebarSection } from "./components/index";
 import { AuthContexProvider } from "./context/loginContext";
@@ -92,6 +92,20 @@ function App() {
     setToken(null);
     setIsLoading(false);
   };
+
+  const location = useLocation();
+  const isLoginOrRegister =
+    location.pathname === "/login" || location.pathname === "/register";
+
+  // No user + not on login/register -> redirect to login
+  if (!isLoading && !user && !isLoginOrRegister) {
+    return <Navigate to="/login" replace />;
+  }
+  // User is logged in but on login/register -> redirect to home
+  if (!isLoading && user && isLoginOrRegister) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <>
       <AuthContexProvider
@@ -105,14 +119,18 @@ function App() {
           createUser,
         }}
       >
-        <div className="app-layout">
-          <div className="box-1">
-            <SidebarSection />
+        {isLoading ? (
+          <div className="app-layout">Loading...</div>
+        ) : (
+          <div className="app-layout">
+            <div className="box-1">
+              <SidebarSection />
+            </div>
+            <div className="box-2">
+              <Outlet />
+            </div>
           </div>
-          <div className="box-2">
-            <Outlet />
-          </div>
-        </div>
+        )}
       </AuthContexProvider>
     </>
   );

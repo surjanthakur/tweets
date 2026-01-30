@@ -1,7 +1,7 @@
 import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/loginContext";
 import "./css/register.css";
 const RegisterForm = () => {
@@ -23,7 +23,7 @@ const RegisterForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      await createUser(data.username, data.email, data.password);
+      createUser(data.username, data.email, data.password);
       toast.success("User registered successfully!");
       setTimeout(() => navigate("/login"), 2000);
     } catch (err) {
@@ -130,6 +130,13 @@ const RegisterForm = () => {
             <button type="submit" className="submit-button">
               Register
             </button>
+
+            <p className="form-footer">
+              Already have an account?{" "}
+              <Link to="/login" className="form-link">
+                Login here
+              </Link>
+            </p>
           </form>
         </div>
       </div>

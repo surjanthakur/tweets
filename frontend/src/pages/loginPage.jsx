@@ -1,7 +1,7 @@
 import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/loginContext";
 import "./css/login.css";
 
@@ -104,6 +104,13 @@ const LoginForm = () => {
             <button type="submit" className="submit-button">
               login
             </button>
+
+            <p className="form-footer">
+              Don't have an account?{" "}
+              <Link to="/register" className="form-link">
+                Register here
+              </Link>
+            </p>
           </form>
         </div>
       </div>
