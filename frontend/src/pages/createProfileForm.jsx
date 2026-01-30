@@ -1,21 +1,25 @@
-import { useForm } from "react-hook-form";
+import axios from "axios";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/loginContext";
 import "./css/createprofile.css";
 
 const CreateProfileForm = () => {
+  const { token } = useAuth();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
-    setValue,
   } = useForm({
     defaultValues: {
       name: "",
       profession: "",
       bio: "",
       location: "",
-      profile_picture: "",
     },
     mode: "onChange",
   });
@@ -23,33 +27,32 @@ const CreateProfileForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (data) => {
+    if (!token) {
+      toast.error("Please log in to create a profile.");
+      return;
+    }
     setIsSubmitting(true);
-    const formData = new FormData();
-    formData.append("name", data.name.trim());
-    formData.append("bio", data.bio.trim());
-    formData.append("profession", data.profession.trim());
-    formData.append("location", data.location.trim());
-    formData.append("profile_picture", data.profile_picture.trim());
-
     try {
-      // Replace with your actual API call
-      // const response = await fetch('/api/profile/create', {
-      //   method: 'POST',
-      //   body: formData,
-      // });
-
-      // console.log('Success:', await response.json());
-
-      alert("Profile created successfully! (demo)");
-      // Reset form after success
-      setValue("name", "");
-      setValue("bio", "");
-      setValue("profession", "");
-      setValue("location", "");
-      setValue("profile_picture", "");
+      await axios.post(
+        "http://127.0.0.1:8000/profile/create",
+        {
+          name: data.name.trim(),
+          profession: data.profession.trim(),
+          location: data.location.trim(),
+          bio: data.bio.trim(),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      toast.success("Profile created successfully!");
+      navigate("/profile");
     } catch (error) {
       console.error("Error creating profile:", error);
-      alert("Failed to create profile. Please try again.");
+      toast.error("Failed to create profile. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -71,12 +74,12 @@ const CreateProfileForm = () => {
               {...register("name", {
                 required: "Name is required",
                 minLength: {
-                  value: 2,
-                  message: "Name must be at least 2 characters",
+                  value: 3,
+                  message: "Name must be at least 3 characters",
                 },
                 maxLength: {
-                  value: 60,
-                  message: "Name cannot exceed 60 characters",
+                  value: 30,
+                  message: "Name cannot exceed 30 characters",
                 },
               })}
             />
@@ -87,16 +90,21 @@ const CreateProfileForm = () => {
 
           {/* Profession */}
           <div className="form-group">
-            <label htmlFor="profession">Profession / Title</label>
+            <label htmlFor="profession">Profession / Title *</label>
             <input
               id="profession"
               type="text"
               placeholder="Full Stack Developer • UI/UX Designer • Student"
               className="form-input"
               {...register("profession", {
+                required: "Profession is required",
+                minLength: {
+                  value: 3,
+                  message: "Profession must be at least 3 characters",
+                },
                 maxLength: {
-                  value: 80,
-                  message: "Profession cannot exceed 80 characters",
+                  value: 50,
+                  message: "Profession cannot exceed 50 characters",
                 },
               })}
             />
@@ -107,13 +115,18 @@ const CreateProfileForm = () => {
 
           {/* Location */}
           <div className="form-group">
-            <label htmlFor="location">Location</label>
+            <label htmlFor="location">Location *</label>
             <input
               id="location"
               type="text"
               placeholder="where you are..?"
               className="form-input"
               {...register("location", {
+                required: "Location is required",
+                minLength: {
+                  value: 3,
+                  message: "Location must be at least 3 characters",
+                },
                 maxLength: {
                   value: 100,
                   message: "Location cannot exceed 100 characters",
@@ -127,43 +140,29 @@ const CreateProfileForm = () => {
 
           {/* Bio */}
           <div className="form-group">
-            <label htmlFor="bio">Bio / About</label>
+            <label htmlFor="bio">Bio / About *</label>
             <textarea
               id="bio"
-              placeholder="Write a short description about yourself... (max 320 characters)"
+              placeholder="Write a short description about yourself... (max 350 characters)"
               className="form-textarea"
               rows={5}
               {...register("bio", {
+                required: "Bio is required",
+                minLength: {
+                  value: 10,
+                  message: "Bio must be at least 10 characters",
+                },
                 maxLength: {
-                  value: 320,
-                  message: "Bio cannot exceed 320 characters",
+                  value: 350,
+                  message: "Bio cannot exceed 350 characters",
                 },
               })}
             />
             <div className="character-count">
-              {watch("bio")?.length || 0} / 320
+              {watch("bio")?.length || 0} / 350
             </div>
             {errors.bio && (
               <span className="error-message">{errors.bio.message}</span>
-            )}
-          </div>
-
-          {/* image url */}
-          <div className="form-group">
-            <label htmlFor="profile_picture">profile image url</label>
-            <input
-              id="profile_picture"
-              type="url"
-              placeholder="https://example.com/your-image.jpg"
-              className="form-input"
-              {...register("profile_picture", {
-                required: "image url is required",
-              })}
-            />
-            {errors.profile_picture && (
-              <span className="error-message">
-                {errors.profile_picture.message}
-              </span>
             )}
           </div>
 

@@ -209,9 +209,36 @@
   border-radius: 9999px;
 }
 
+/* Loading */
+.profile-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #71767b;
+  font-size: 15px;
+}
+
 /* Posts */
 .posts-list {
   border-top: 1px solid #2f3336;
+}
+
+.no-tweets {
+  padding: 48px 16px;
+  text-align: center;
+  color: #71767b;
+}
+
+.no-tweets p {
+  font-size: 18px;
+  font-weight: 700;
+  color: #e7e9ea;
+  margin: 0 0 8px;
+}
+
+.no-tweets span {
+  font-size: 15px;
 }
 
 .tweet-card {

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Toaster } from "react-hot-toast";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import "./App.css";
 import { SidebarSection } from "./components/index";
@@ -105,6 +106,11 @@ function App() {
 
   return (
     <>
+      <Toaster
+        position="top-center"
+        toastOptions={{ duration: 5000 }}
+        reverseOrder={false}
+      />
       <AuthContexProvider
         value={{
           user,

@@ -1,6 +1,6 @@
 import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/loginContext";
 import "./css/login.css";
@@ -32,11 +32,6 @@ const LoginForm = () => {
 
   return (
     <>
-      <Toaster
-        position="top-center"
-        toastOptions={{ duration: 5000 }}
-        reverseOrder={false}
-      />
       <div className="overlay-container">
         <div className="form-container">
           <h2 className="form-title">
