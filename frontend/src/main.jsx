@@ -10,6 +10,7 @@ import App from "./App.jsx";
 import "./index.css";
 
 import {
+  AllTweets,
   CreateProfileForm,
   LoginForm,
   ProfilePage,
@@ -23,6 +24,7 @@ const my_router = createBrowserRouter(
       <Route path="/createProfile" element={<CreateProfileForm />} />
       <Route path="/register" element={<RegisterForm />} />
       <Route path="/login" element={<LoginForm />} />
+      <Route path="/allTweets" element={<AllTweets />} />
     </Route>
   )
 );

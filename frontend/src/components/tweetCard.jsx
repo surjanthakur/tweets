@@ -1,56 +1,41 @@
+import { Heart, MessageCircle } from "lucide-react";
 import "./css/tweetcard.css";
-import { useState } from "react";
-import { MessageCircle, Heart } from "lucide-react";
 
-export default function TweetCard() {
-  // You can pass these as props later
-  const username = "epicSurjan";
-  const handle = "@tsurjan16";
-  const timeAgo = "10h";
-  const avatarUrl =
-    "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=200"; // ← replace with real URL or prop
+const DEFAULT_AVATAR =
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=profile";
 
-  const tweetLines = [
-    "so rainy weather today no electricity 😭",
-    "uvloop for async fast speed.",
-    "apply some production grade code .",
-    "uvloop for async fast speed.",
-    "api's versioning.",
-    "api's versioning.",
-    "23/60hrs only , lets touch the milestone 😊.",
-    "2 days left only, lets touch the milestone 😊.",
-    "23hrs week.",
-    "i know i lost the two days consistency 😔.",
-  ];
-
-  const engagement = {
-    comments: "3",
-    retweets: "2h 14m", // ← looks like time spent?
-    likes: "100",
-    views: "9",
-    bookmarks: "",
-  };
+export default function TweetCard({
+  profileName,
+  content,
+  created_at,
+  likeCount = 0,
+  commentsCount = 0,
+  avatarUrl,
+}) {
+  const name = profileName ?? "User";
+  const text = content ?? "";
+  const avatar = avatarUrl || DEFAULT_AVATAR;
+  const tweetLines = text ? text.split("\n").filter(Boolean) : [""];
 
   return (
     <article className="tweet-card">
-      {/* Top section - avatar + name + time */}
       <div className="tweet-header">
         <img
-          src={avatarUrl}
-          alt={`${username} profile`}
+          src={avatar}
+          alt={`${name} profile`}
           className="avatar"
           onError={(e) => {
-            e.target.src = "https://via.placeholder.com/48";
+            e.target.src = DEFAULT_AVATAR;
           }}
         />
         <div className="user-info">
-          <span className="display-name">{username}</span>
-          <span className="handle">{handle}</span>
-          <span className="time">· {timeAgo}</span>
+          <span className="display-name">{name}</span>
+          {created_at != null && created_at !== "" && (
+            <span className="time">· {created_at}</span>
+          )}
         </div>
       </div>
 
-      {/* Middle - main content (bullet-like lines) */}
       <div className="tweet-content">
         {tweetLines.map((line, i) => (
           <div key={i} className="tweet-line">
@@ -58,20 +43,19 @@ export default function TweetCard() {
           </div>
         ))}
       </div>
-      {/* Bottom engagement bar */}
+
       <div className="tweet-footer">
-        <button className="action-btn comment">
+        <button type="button" className="action-btn comment">
           <span>
             <MessageCircle size={24} />
           </span>{" "}
-          {engagement.comments}
+          {commentsCount}
         </button>
-        <button className="action-btn like">
+        <button type="button" className="action-btn like">
           <span>
-            {" "}
             <Heart size={24} />
           </span>{" "}
-          {engagement.likes}
+          {likeCount}
         </button>
       </div>
     </article>

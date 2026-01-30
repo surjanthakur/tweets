@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import os
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import selectinload
 from db.db_tables import User
 from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi import Depends, HTTPException, status
@@ -86,7 +87,11 @@ async def get_current_user(
     except InvalidTokenError:
         raise credentials_exception
 
-    statement = await db.exec(select(User).where(User.username == token_data.username))
+    statement = await db.exec(
+        select(User)
+        .options(selectinload(User.profile))
+        .where(User.username == token_data.username)
+    )
     curr_user = statement.first()
     if not curr_user:
         raise credentials_exception

@@ -12,21 +12,19 @@ tweet_router = APIRouter(tags=["tweets"], prefix="/tweet")
 
 
 # get all tweets
-@tweet_router.get("/", status_code=status.HTTP_200_OK, summary="Get all tweets")
+@tweet_router.get("/all", status_code=status.HTTP_200_OK, summary="Get all tweets")
 async def get_all_tweets(db: AsyncSession = Depends(get_session)):
     try:
         statement = await db.exec(select(Tweet).options(selectinload(Tweet.profile)))
         all_tweets = statement.all()
-        if not all_tweets:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="No tweets found"
-            )
-        return all_tweets
+        return all_tweets if all_tweets else []
+    except HTTPException:
+        raise
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {err}",
-        )
+            detail="Failed to fetch tweets",
+        ) from err
 
 
 # Get tweet by ID

@@ -30,9 +30,7 @@ export default function ProfilePage() {
         setProfile(res.data);
       } catch (err) {
         if (err.response?.status === 404) {
-          setTimeout(() => {
-            navigate("/createProfile");
-          }, 1500);
+          navigate("/createProfile");
         }
         console.error("Failed to fetch profile:", err);
       } finally {

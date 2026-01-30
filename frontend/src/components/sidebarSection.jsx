@@ -1,7 +1,7 @@
 import {
   Bell,
   Bookmark,
-  Home,
+  HomeIcon,
   Mail,
   MoreHorizontal,
   Search,
@@ -16,9 +16,10 @@ import "./css/sidebar.css";
 export default function SidebarSection() {
   const [active, setActive] = useState("Home");
   const [showTweetForm, setShowTweetForm] = useState(false);
-  const {user} = useAuth()
+  const { user } = useAuth();
 
   const navItems = [
+    { name: "Home", icon: HomeIcon, path: "/allTwets" },
     { name: "Explore", icon: Search, path: "/explore" },
     { name: "Notifications", icon: Bell, path: "/notifications" },
     { name: "Chat", icon: Mail, path: "/messages" },
@@ -39,17 +40,12 @@ export default function SidebarSection() {
           {/* Navigation */}
           <nav className="sidebar-nav">
             <ul>
-              {/* get all tweets if press the home button */}
-              <button
-                className={`nav-item ${active === "Home" ? "active" : ""}`}
-              >
-                <Home size={28} strokeWidth={2} />
-                <span className="nav-text">Home</span>
-              </button>
               {navItems.map((item) => (
                 <NavLink key={item.name} to={item.path}>
                   <button
-                    className={`nav-item ${active === item.name ? "active" : ""}`}
+                    className={`nav-item ${
+                      active === item.name ? "active" : ""
+                    }`}
                     onClick={() => setActive(item.name)}
                   >
                     <item.icon size={28} strokeWidth={2} />
@@ -78,7 +74,9 @@ export default function SidebarSection() {
               />
             </div>
             <div className="user-info">
-              <div className="display-name">{user?.username}</div>
+              <div className="display-name">
+                {user?.profile?.name ?? "@yourname"}
+              </div>
               <div className="username">{user?.email}</div>
             </div>
             <button className="more-btn">⋯</button>
