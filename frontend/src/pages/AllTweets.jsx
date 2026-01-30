@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { TweetCard } from "../components/index";
 
 const API_BASE = "http://127.0.0.1:8000";
@@ -10,13 +11,18 @@ export default function AllTweets() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchTweets = async () => {
+    let cancelled = false;
+
+    const promise = (async () => {
       setLoading(true);
       setError(null);
       try {
         const res = await axios.get(`${API_BASE}/tweet/all`);
+        if (cancelled) return res;
         setTweets(Array.isArray(res.data) ? res.data : []);
+        return res;
       } catch (err) {
+        if (cancelled) return;
         const message =
           err.response?.data?.detail ||
           err.message ||
@@ -25,19 +31,28 @@ export default function AllTweets() {
           typeof message === "string" ? message : JSON.stringify(message)
         );
         setTweets([]);
+        throw err;
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
+    })();
+
+    toast.promise(promise, {
+      loading: "Loading tweets...",
+      success: "Tweets loaded 👍🏻!",
+      error: (err) =>
+        err.response?.data?.detail ||
+        err.message ||
+        "Could not load tweets. Please try again.",
+    });
+
+    return () => {
+      cancelled = true;
     };
-    fetchTweets();
   }, []);
 
   if (loading) {
-    return (
-      <div className="all-tweets all-tweets--loading">
-        <p>Loading tweets...</p>
-      </div>
-    );
+    return <div className="all-tweets all-tweets--loading" />;
   }
 
   if (error) {

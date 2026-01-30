@@ -19,13 +19,13 @@ export default function SidebarSection() {
   const { user } = useAuth();
 
   const navItems = [
-    { name: "Home", icon: HomeIcon, path: "/allTwets" },
-    { name: "Explore", icon: Search, path: "/explore" },
-    { name: "Notifications", icon: Bell, path: "/notifications" },
+    { name: "Home", icon: HomeIcon, path: "/" },
+    { name: "Explore", icon: Search, path: "/" },
+    { name: "Notifications", icon: Bell, path: "/" },
     { name: "Chat", icon: Mail, path: "/messages" },
-    { name: "Bookmarks", icon: Bookmark, path: "/bookmarks" },
+    { name: "Bookmarks", icon: Bookmark, path: "/" },
     { name: "Profile", icon: User, path: "/profile" },
-    { name: "More", icon: MoreHorizontal, path: "#" },
+    { name: "More", icon: MoreHorizontal, path: "/" },
   ];
 
   return (
@@ -74,9 +74,7 @@ export default function SidebarSection() {
               />
             </div>
             <div className="user-info">
-              <div className="display-name">
-                {user?.profile?.name ?? "@yourname"}
-              </div>
+              <div className="display-name">{user?.name}</div>
               <div className="username">{user?.email}</div>
             </div>
             <button className="more-btn">⋯</button>

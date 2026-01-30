@@ -20,11 +20,11 @@ import {
 const my_router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
+      <Route index element={<AllTweets />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/createProfile" element={<CreateProfileForm />} />
       <Route path="/register" element={<RegisterForm />} />
       <Route path="/login" element={<LoginForm />} />
-      <Route path="/allTweets" element={<AllTweets />} />
     </Route>
   )
 );
