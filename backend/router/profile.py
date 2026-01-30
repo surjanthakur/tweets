@@ -1,7 +1,7 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from db.db_tables import Profile
 from db.db_connection import get_session
-from models.validation_models import RequestProfile
+from models.validation_models import RequestProfile, ProfileResponse
 from fastapi import APIRouter, HTTPException, status, Depends
 from sqlmodel import select
 from sqlalchemy.orm import selectinload
@@ -33,7 +33,9 @@ async def get_profile(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="cant find profile",
             )
-        return my_profile
+        return ProfileResponse.model_validate(my_profile)
+    except HTTPException:
+        raise
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

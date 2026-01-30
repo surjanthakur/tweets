@@ -56,7 +56,7 @@ function App() {
         params,
         {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        },
+        }
       );
       const { access_token } = response.data;
       if (!access_token) return false;
@@ -76,7 +76,7 @@ function App() {
       const response = await axios.post(
         "http://127.0.0.1:8000/auth/register",
         { username, email, password },
-        { headers: { "Content-Type": "application/json" } },
+        { headers: { "Content-Type": "application/json" } }
       );
       if (!response.data) throw new Error("Registration failed");
       setUser(response.data);
@@ -111,7 +111,7 @@ function App() {
     <>
       <Toaster
         position="top-center"
-        toastOptions={{ duration: 5000 }}
+        toastOptions={{ duration: 3000 }}
         reverseOrder={false}
       />
       <AuthContexProvider
@@ -126,7 +126,7 @@ function App() {
         }}
       >
         {isLoading ? (
-          <div className="app-layout">Loading...</div>
+          <div className="app-layout">wait checking your credentials 🧐</div>
         ) : (
           <div className="app-layout">
             <div className="box-1">

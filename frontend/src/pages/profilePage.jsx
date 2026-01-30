@@ -30,11 +30,9 @@ export default function ProfilePage() {
         setProfile(res.data);
       } catch (err) {
         if (err.response?.status === 404) {
-          toast.error("profile not found!");
           setTimeout(() => {
-            navigate("/create-profile");
+            navigate("/createProfile");
           }, 1500);
-          return;
         }
         console.error("Failed to fetch profile:", err);
       } finally {
@@ -53,7 +51,8 @@ export default function ProfilePage() {
   }
 
   if (!profile) {
-    return null;
+    toast.error("profile not found!");
+    return;
   }
 
   const tweets = profile?.tweets ?? [];

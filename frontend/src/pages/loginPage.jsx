@@ -1,4 +1,5 @@
 import { User } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,6 +7,7 @@ import { useAuth } from "../context/loginContext";
 import "./css/login.css";
 
 const LoginForm = () => {
+  const [isLogin, setIsLogin] = useState(false);
   const {
     register,
     handleSubmit,
@@ -18,14 +20,18 @@ const LoginForm = () => {
     mode: "onChange",
   });
   const navigate = useNavigate();
+
   const { loginUser } = useAuth();
   const onSubmit = async (data) => {
+    setIsLogin(true);
     const success = await loginUser(data.username, data.password);
     if (success) {
       toast.success("Logged in successfully!");
+      setIsLogin(false);
       setTimeout(() => navigate("/"), 1500);
     } else {
       toast.error("Invalid credentials. Please try again.");
+      setIsLogin(false);
     }
   };
 
@@ -96,7 +102,7 @@ const LoginForm = () => {
             </div>
 
             <button type="submit" className="submit-button">
-              login
+              {isLogin ? "loging user.." : "login"}
             </button>
 
             <p className="form-footer">

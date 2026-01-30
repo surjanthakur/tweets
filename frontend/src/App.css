@@ -4,11 +4,14 @@
 .app-layout {
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
   height: 100vh;
   padding: 0 1rem;
+  color: white;
+  font-weight: 600;
 }
 
 /* Sidebar wrapper */
