@@ -1,40 +1,23 @@
 // src/components/Profile.jsx
-import { ArrowLeft, CalendarDays, MapPin } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { ArrowLeft, MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/loginContext";
 import "./css/profilePage.css";
 import { ProfileEditForm } from "./index";
-import { useAuth } from "../context/loginContext";
 
-const DEFAULT_AVATAR = "https://api.dicebear.com/7.x/avataaars/svg?seed=profile";
-const DEFAULT_BANNER = "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800";
-
-function formatDate(isoString) {
-  if (!isoString) return "";
-  const d = new Date(isoString);
-  return d.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
-}
-
-function formatTweetTime(isoString) {
-  if (!isoString) return "";
-  const d = new Date(isoString);
-  const now = new Date();
-  const diffMs = now - d;
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-  if (diffMins < 60) return `${diffMins}m`;
-  if (diffHours < 24) return `${diffHours}h`;
-  if (diffDays < 7) return `${diffDays}d`;
-  return d.toLocaleDateString();
-}
+const DEFAULT_AVATAR =
+  "https://api.dicebear.com/7.x/avataaars/svg?seed=profile";
+const DEFAULT_BANNER =
+  "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800";
 
 export default function ProfilePage() {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { user: authUser, token } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,7 +30,10 @@ export default function ProfilePage() {
         setProfile(res.data);
       } catch (err) {
         if (err.response?.status === 404) {
-          navigate("/create-profile", { replace: true });
+          toast.error("profile not found!");
+          setTimeout(() => {
+            navigate("/create-profile");
+          }, 1500);
           return;
         }
         console.error("Failed to fetch profile:", err);
@@ -70,8 +56,8 @@ export default function ProfilePage() {
     return null;
   }
 
-  const tweets = profile.tweets ?? [];
-  const username = authUser?.username ?? "";
+  const tweets = profile?.tweets ?? [];
+  const username = user?.username;
 
   return (
     <>
@@ -126,9 +112,6 @@ export default function ProfilePage() {
                     <MapPin size={16} /> {profile.location}
                   </span>
                 )}
-                <span className="joined">
-                  <CalendarDays size={16} /> Joined {formatDate(profile.created_at)}
-                </span>
               </div>
 
               <div className="follow-stats">
@@ -162,15 +145,10 @@ export default function ProfilePage() {
             tweets.map((tweet) => (
               <article key={tweet.tweet_id} className="tweet-card">
                 <div className="tweet-header">
-                  <img
-                    src={DEFAULT_AVATAR}
-                    alt=""
-                    className="mini-avatar"
-                  />
+                  <img src={DEFAULT_AVATAR} alt="" className="mini-avatar" />
                   <div className="tweet-user">
                     <span className="display-name">{profile.name}</span>
                     <span className="username">{username}</span>
-                    <span className="tweet-time">· {formatTweetTime(tweet.created_at)}</span>
                   </div>
                 </div>
                 <div className="tweet-content">{tweet.content}</div>
