@@ -1,20 +1,22 @@
+import {
+  Bell,
+  Bookmark,
+  Home,
+  Mail,
+  MoreHorizontal,
+  Search,
+  User,
+} from "lucide-react";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import {
-  Home,
-  Search,
-  Bell,
-  Mail,
-  Bookmark,
-  User,
-  MoreHorizontal,
-} from "lucide-react";
-import "./css/sidebar.css";
+import { useAuth } from "../context/loginContext";
 import { TweetForm } from "../pages/index";
+import "./css/sidebar.css";
 
 export default function SidebarSection() {
   const [active, setActive] = useState("Home");
   const [showTweetForm, setShowTweetForm] = useState(false);
+  const {user} = useAuth()
 
   const navItems = [
     { name: "Explore", icon: Search, path: "/explore" },
@@ -76,8 +78,8 @@ export default function SidebarSection() {
               />
             </div>
             <div className="user-info">
-              <div className="display-name">epicSurjan</div>
-              <div className="username">@tsurjan16</div>
+              <div className="display-name">{user?.username}</div>
+              <div className="username">{user?.email}</div>
             </div>
             <button className="more-btn">⋯</button>
           </div>

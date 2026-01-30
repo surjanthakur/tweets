@@ -30,12 +30,9 @@ function App() {
   // Fetch current user when token changes
   const currUser = async (authToken) => {
     try {
-      const response = await axios.get(
-        "http://127.0.0.1:8000/auth/current-user",
-        {
-          headers: { Authorization: `Bearer ${authToken}` },
-        },
-      );
+      const response = await axios.get("http://127.0.0.1:8000/auth/current", {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
       if (!response.data) {
         throw new Error("Invalid token");
       }

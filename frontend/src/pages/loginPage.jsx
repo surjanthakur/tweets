@@ -23,7 +23,7 @@ const LoginForm = () => {
     try {
       loginUser(data.username, data.password);
       toast.success("User login successfully!");
-      setTimeout(() => navigate("/"), 2000);
+      setTimeout(() => navigate("/"), 1000);
     } catch (err) {
       toast.error(err?.message || "Invalid credentials. Please try again.");
       console.error("Login error:", err);

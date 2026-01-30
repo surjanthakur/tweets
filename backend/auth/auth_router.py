@@ -69,7 +69,7 @@ async def create_user(user_data: request_user, db: AsyncSession = Depends(get_se
 
 # get current user
 @auth_router.get(
-    "/current-user",
+    "/current",
     status_code=status.HTTP_200_OK,
     summary="return current user details with the access_token",
 )
