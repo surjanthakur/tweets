@@ -20,13 +20,12 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const { loginUser } = useAuth();
   const onSubmit = async (data) => {
-    try {
-      loginUser(data.username, data.password);
-      toast.success("User login successfully!");
-      setTimeout(() => navigate("/"), 1000);
-    } catch (err) {
-      toast.error(err?.message || "Invalid credentials. Please try again.");
-      console.error("Login error:", err);
+    const success = await loginUser(data.username, data.password);
+    if (success) {
+      toast.success("Logged in successfully!");
+      setTimeout(() => navigate("/"), 1500);
+    } else {
+      toast.error("Invalid credentials. Please try again.");
     }
   };
 

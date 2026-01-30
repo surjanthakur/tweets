@@ -45,6 +45,7 @@ function App() {
   };
 
   // login function (backend expects form-urlencoded per OAuth2PasswordRequestForm)
+  // Returns true if login success, false if failed (caller can show toast/redirect accordingly)
   const loginUser = async (username, password) => {
     try {
       const params = new URLSearchParams();
@@ -58,12 +59,14 @@ function App() {
         },
       );
       const { access_token } = response.data;
-      if (!access_token) throw new Error("No token in response");
+      if (!access_token) return false;
       localStorage.setItem("access_token", access_token);
       setToken(access_token);
       await currUser(access_token); // Fetch user after login
+      return true;
     } catch (error) {
-      throw new Error("Registration failed");
+      console.log("login error:", error);
+      return false;
     }
   };
 
