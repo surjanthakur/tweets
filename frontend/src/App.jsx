@@ -128,7 +128,7 @@ function App() {
         }}
       >
         {isLoading ? (
-          <div className="app-layout">wait checking your credentials 🧐      <Loader/></div>
+          <div className="app-layout">wait checking your credentials 🧐 <Loader/></div>
 
         ) : (
           <div className="app-layout">
