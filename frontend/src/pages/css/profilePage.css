@@ -221,6 +221,11 @@
 /* Posts */
 .posts-list {
   border-top: 1px solid #2f3336;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  text-align: left;
 }
 
 .no-tweets {
@@ -244,6 +249,16 @@
   padding: 12px 16px;
   border-bottom: 1px solid #2f3336;
   cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+/* Override alltweets.css .tweet-card (margin: auto, max-width) so profile tweets align start */
+.profile-page .posts-list .tweet-card {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: none;
 }
 
 .tweet-card:hover {

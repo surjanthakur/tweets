@@ -66,6 +66,8 @@ function App() {
       return true;
     } catch (error) {
       console.log("login error:", error);
+      const status = error.response?.status;
+      if (status >= 500) return "server_error";
       return false;
     }
   };

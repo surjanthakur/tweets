@@ -23,9 +23,11 @@ const RegisterForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      createUser(data.username, data.email, data.password);
-      toast.success("User registered successfully!");
-      setTimeout(() => navigate("/login"), 2000);
+      const user = createUser(data.username, data.email, data.password);
+      if (user == true) {
+        toast.success("User registered successfully!");
+        setTimeout(() => navigate("/login"), 1500);
+      }
     } catch (err) {
       toast.error(err?.message || "Registration failed. Please try again.");
       console.error("Register error:", err);

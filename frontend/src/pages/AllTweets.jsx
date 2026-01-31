@@ -1,10 +1,8 @@
 import axios from "axios";
+import { Heart, Reply } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Reply, Heart } from "lucide-react";
 import "./css/alltweets.css";
-
-const API_BASE = "http://127.0.0.1:8000";
 
 function formatTweetTime(isoString) {
   if (!isoString) return "";
@@ -30,7 +28,7 @@ export default function AllTweets() {
     (async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${API_BASE}/tweet/all`);
+        const res = await axios.get("http://127.0.0.1:8000/tweet/all");
         if (cancelled) return;
         setTweets(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
@@ -78,15 +76,11 @@ export default function AllTweets() {
       {tweets.map((tweet, idx) => (
         <article key={idx} className="tweet-card">
           <div className="tweet-header">
-            <div className="avatar avatar-placeholder" aria-hidden>
-              {tweet.profile?.name}
-            </div>
             <div className="user-info">
-              <span className="display-name">{tweet.profile?.name}</span>
               <span className="handle">
                 @
                 {tweet.profile?.name?.toLowerCase().replace(/\s+/g, "") ??
-                  "user"}
+                  "yourname"}
               </span>
               <span className="time">{formatTweetTime(tweet.created_at)}</span>
             </div>

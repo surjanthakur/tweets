@@ -5,14 +5,20 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from sqlmodel import select
 from sqlalchemy.orm import selectinload
 from uuid import UUID
-from models.validation_models import RequestTweet
+from typing import List
+from models.validation_models import RequestTweet, TweetResponse
 from auth.auth_service import get_current_user
 
 tweet_router = APIRouter(tags=["tweets"], prefix="/tweet")
 
 
 # get all tweets
-@tweet_router.get("/all", status_code=status.HTTP_200_OK, summary="Get all tweets")
+@tweet_router.get(
+    "/all",
+    status_code=status.HTTP_200_OK,
+    response_model=List[TweetResponse],
+    summary="Get all tweets",
+)
 async def get_all_tweets(db: AsyncSession = Depends(get_session)):
     try:
         statement = await db.exec(select(Tweet).options(selectinload(Tweet.profile)))

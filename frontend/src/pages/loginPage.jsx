@@ -24,8 +24,8 @@ const LoginForm = () => {
   const { loginUser } = useAuth();
   const onSubmit = async (data) => {
     setIsLogin(true);
-    const success = await loginUser(data.username, data.password);
-    if (success) {
+    const result = await loginUser(data.username, data.password);
+    if (result === true) {
       toast.success("Logged in successfully!");
       setIsLogin(false);
       setTimeout(() => navigate("/"), 1500);

@@ -145,7 +145,6 @@ export default function ProfilePage() {
                   <img src={DEFAULT_AVATAR} alt="" className="mini-avatar" />
                   <div className="tweet-user">
                     <span className="display-name">{profile.name}</span>
-                    <span className="username">{username}</span>
                   </div>
                 </div>
                 <div className="tweet-content">{tweet.content}</div>

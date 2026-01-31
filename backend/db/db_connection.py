@@ -27,11 +27,12 @@ class Settings(BaseSettings):
 # Initialize settings from environment variables
 env_settings = Settings()
 
-# Create asynchronous database engine
+# Create asynchronous database engine (timeout in seconds for slow/SSL connections)
 engine: AsyncEngine = create_async_engine(
     env_settings.db_url,
     echo=env_settings.db_echo,
     pool_pre_ping=True,
+    connect_args={"timeout": 60},
 )
 
 #  Create asynchronous session maker
