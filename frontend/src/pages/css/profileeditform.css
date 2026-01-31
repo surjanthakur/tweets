@@ -103,6 +103,17 @@
   border-color: #1d9bf0;
 }
 
+.form-group .error-message {
+  font-size: 0.8rem;
+  color: #f4212e;
+}
+
+.form-group .character-count {
+  font-size: 0.8rem;
+  color: #71767b;
+  text-align: right;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .profile-modal {

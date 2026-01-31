@@ -20,23 +20,24 @@ export default function ProfilePage() {
   const { user, token } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const fetchProfile = async () => {
     if (!token) return;
-    const fetchProfile = async () => {
-      try {
-        const res = await axios.get("http://127.0.0.1:8000/profile/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setProfile(res.data);
-      } catch (err) {
-        if (err.response?.status === 404) {
-          navigate("/createProfile");
-        }
-        console.error("Failed to fetch profile:", err);
-      } finally {
-        setLoading(false);
+    try {
+      const res = await axios.get("http://127.0.0.1:8000/profile/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProfile(res.data);
+    } catch (err) {
+      if (err.response?.status === 404) {
+        navigate("/createProfile");
       }
-    };
+      console.error("Failed to fetch profile:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchProfile();
   }, [token, navigate]);
 
@@ -156,6 +157,7 @@ export default function ProfilePage() {
       <ProfileEditForm
         isOpen={editFormOpen}
         onClose={() => setEditFormOpen(false)}
+        onSuccess={fetchProfile}
       />
     </>
   );
