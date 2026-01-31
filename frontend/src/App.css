@@ -23,15 +23,19 @@
   flex-shrink: 0;
 }
 
-/* home feed wrapper */
+
 .box-2 {
   flex: 1;
   height: 100vh;
   overflow-y: auto;
   padding-right: 0.5rem;
   border-right: 1px solid rgba(255, 255, 255, 0.3);
+  scroll-behavior: smooth;
+  /* Hide scrollbar but keep scroll */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE / Edge */
 }
 
-.box-2 {
-  scroll-behavior: smooth;
+.box-2::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
