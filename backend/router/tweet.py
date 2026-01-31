@@ -18,13 +18,11 @@ async def get_all_tweets(db: AsyncSession = Depends(get_session)):
         statement = await db.exec(select(Tweet).options(selectinload(Tweet.profile)))
         all_tweets = statement.all()
         return all_tweets if all_tweets else []
-    except HTTPException:
-        raise
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to fetch tweets",
-        ) from err
+            detail=f"Internal server error: {err}",
+        )
 
 
 # Get tweet by ID

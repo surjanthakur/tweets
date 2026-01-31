@@ -1,3 +1,21 @@
+/* AllTweets page */
+.all-tweets {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.no-tweets {
+  text-align: center;
+  color: #888;
+  font-size: 16px;
+  padding: 32px 16px;
+}
+
+.no-tweets.error-msg {
+  color: #f87171;
+}
+
 /* TweetCard.css */
 .tweet-card {
   width: 100%;
@@ -6,8 +24,7 @@
   border: 1px solid #222;
   border-radius: 20px;
   color: #e0e0e0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow: hidden;
   margin: 12px auto;
 }
@@ -28,6 +45,16 @@
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
+}
+
+.avatar.avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #333;
+  color: #e0e0e0;
+  font-weight: 700;
+  font-size: 18px;
 }
 
 .user-info {

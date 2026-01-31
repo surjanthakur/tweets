@@ -20,9 +20,8 @@
   border-radius: 16px;
   border: 1px solid #2f3336;
   overflow: hidden;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 }
 
 .modal-header {
@@ -143,25 +142,25 @@ textarea::placeholder {
 }
 
 .post-btn {
-  background: rgb(29, 155, 240);
+  background: rgb(25, 130, 250);
   color: white;
   border: none;
   border-radius: 9999px;
   padding: 8px 20px;
   font-size: 15px;
   font-weight: 700;
-  cursor: not-allowed;
-  opacity: 0.5;
-  transition: all 0.2s;
-}
-
-.post-btn.active {
   cursor: pointer;
-  opacity: 1;
+  transition: all 0.2s;
+  &:hover {
+    background: rgb(91, 93, 95);
+  }
 }
 
-.post-btn:hover:not(:disabled) {
-  background: rgb(19, 135, 220);
+.error-message {
+  display: block;
+  color: #a82626; /* Red for errors (usability exception) */
+  font-size: 14px;
+  margin-top: 5px;
 }
 
 /* ────────────────────────────────────────
