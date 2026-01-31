@@ -107,7 +107,7 @@ export default function ProfilePage() {
               <div className="extra-info">
                 {profile.location && (
                   <span className="location">
-                    <MapPin size={16} /> {profile.location}
+                    <MapPin size={16} /> {profile.location}. <span>{profile.profession}</span>
                   </span>
                 )}
               </div>
