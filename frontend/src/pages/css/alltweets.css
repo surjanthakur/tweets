@@ -5,6 +5,13 @@
   padding: 16px;
 }
 
+.loader-div{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 400px;
+}
+
 .no-tweets {
   text-align: center;
   color: #888;

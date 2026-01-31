@@ -3,6 +3,7 @@ import { Heart, Reply } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import "./css/alltweets.css";
+import {Loader} from "../components/index"
 
 function formatTweetTime(isoString) {
   if (!isoString) return "";
@@ -57,8 +58,8 @@ export default function AllTweets() {
 
   if (loading) {
     return (
-      <div className="all-tweets">
-        <p className="no-tweets">Loading tweets…</p>
+      <div className="loader-div">
+         <Loader/>
       </div>
     );
   }

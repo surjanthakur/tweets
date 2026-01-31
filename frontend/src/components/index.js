@@ -1,2 +1,3 @@
 import SidebarSection from "./sidebarSection";
-export { SidebarSection };
+import Loader from "./Loader"
+export { SidebarSection , Loader };

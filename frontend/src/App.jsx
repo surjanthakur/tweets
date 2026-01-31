@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import "./App.css";
-import { SidebarSection } from "./components/index";
+import { SidebarSection ,Loader} from "./components/index";
 import { AuthContexProvider } from "./context/loginContext";
 
 function App() {
@@ -128,7 +128,8 @@ function App() {
         }}
       >
         {isLoading ? (
-          <div className="app-layout">wait checking your credentials 🧐</div>
+          <div className="app-layout">wait checking your credentials 🧐      <Loader/></div>
+
         ) : (
           <div className="app-layout">
             <div className="box-1">

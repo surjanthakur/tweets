@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/loginContext";
 import "./css/profilePage.css";
 import { ProfileEditForm } from "./index";
+import {Loader} from "../components/index"
 
 const DEFAULT_AVATAR =
   "https://api.dicebear.com/7.x/avataaars/svg?seed=profile";
@@ -43,8 +44,8 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="profile-page">
-        <div className="profile-loading">Loading profile...</div>
+      <div className="profile-loader flex justify-center align-middle mt-96">
+      <Loader/>
       </div>
     );
   }
