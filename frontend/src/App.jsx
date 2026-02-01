@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import "./App.css";
-import { SidebarSection ,Loader} from "./components/index";
+import { SidebarSection, Loader } from "./components/index";
 import { AuthContexProvider } from "./context/loginContext";
 
 function App() {
@@ -11,7 +11,6 @@ function App() {
   const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check for token in localStorage on app load
   useEffect(() => {
     const storedToken = localStorage.getItem("access_token");
     if (storedToken) {
@@ -56,7 +55,7 @@ function App() {
         params,
         {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        }
+        },
       );
       const { access_token } = response.data;
       if (!access_token) return false;
@@ -78,7 +77,7 @@ function App() {
       const response = await axios.post(
         "http://127.0.0.1:8000/auth/register",
         { username, email, password },
-        { headers: { "Content-Type": "application/json" } }
+        { headers: { "Content-Type": "application/json" } },
       );
       if (!response.data) throw new Error("Registration failed");
       setUser(response.data);
@@ -90,6 +89,9 @@ function App() {
 
   // Logout function
   const logout = () => {
+    toast('logged out', {
+      icon: '💁',
+    });
     localStorage.removeItem("access_token");
     setUser(null);
     setToken(null);
@@ -128,8 +130,9 @@ function App() {
         }}
       >
         {isLoading ? (
-          <div className="app-layout">wait checking your credentials 🧐 <Loader/></div>
-
+          <div className="app-layout">
+            wait checking your credentials 🧐 <Loader />
+          </div>
         ) : (
           <div className="app-layout">
             <div className="box-1">

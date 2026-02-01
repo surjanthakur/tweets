@@ -6,6 +6,8 @@ import {
   MoreHorizontal,
   Search,
   User,
+  PenIcon,
+  LogOut
 } from "lucide-react";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
@@ -16,7 +18,7 @@ import "./css/sidebar.css";
 export default function SidebarSection() {
   const [active, setActive] = useState("Home");
   const [showTweetForm, setShowTweetForm] = useState(false);
-  const { user } = useAuth();
+  const { user ,logout } = useAuth();
 
   const navItems = [
     { name: "Home", icon: HomeIcon, path: "/" },
@@ -58,10 +60,16 @@ export default function SidebarSection() {
 
           {/* create new tweet if press the post pop up tweetform */}
           <button
-            className="post-button"
+            className="post-button flex justify-center align-middle"
             onClick={() => setShowTweetForm(true)}
           >
-            Post
+            <PenIcon size={24}/>&nbsp;Post
+          </button>
+          <button
+            className="post-button flex justify-center align-middle"
+            onClick={() => logout()}
+          >
+            <LogOut size={24}/>&nbsp;logout
           </button>
 
           {/* Bottom user section (authenticated user) */}
@@ -74,19 +82,14 @@ export default function SidebarSection() {
               />
             </div>
             <div className="user-info">
-              <div className="display-name">{user?.name}</div>
-              <div className="username">{user?.email}</div>
+              <div className="username">{user?.username}</div>
             </div>
-            <button className="more-btn">⋯</button>
           </div>
         </div>
       </aside>
       <TweetForm
         isOpen={showTweetForm}
         onClose={() => setShowTweetForm(false)}
-        onPost={(data) => {
-          console.log("new post", data);
-        }}
       />
     </>
   );

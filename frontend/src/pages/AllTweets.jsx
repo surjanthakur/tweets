@@ -73,7 +73,7 @@ export default function AllTweets() {
   }
 
   return (
-    <div className="all-tweets">
+<>
       {tweets.map((tweet, idx) => (
         <article key={idx} className="tweet-card">
           <div className="tweet-header">
@@ -101,6 +101,6 @@ export default function AllTweets() {
           </div>
         </article>
       ))}
-    </div>
+</>
   );
 }

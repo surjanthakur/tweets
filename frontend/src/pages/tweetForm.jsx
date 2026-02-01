@@ -10,9 +10,11 @@ import "./css/tweetform.css";
 
 const API_BASE = "http://127.0.0.1:8000";
 
-export default function TweetForm({ isOpen, onClose, onPost }) {
+export default function TweetForm({ isOpen, onClose }) {
+  const [isSubmit , setIsSubmit] = useState(false)
   const [text, setText] = useState("");
   const textareaRef = useRef(null);
+
 
   const {
     register,
@@ -51,6 +53,7 @@ export default function TweetForm({ isOpen, onClose, onPost }) {
       return;
     }
     try {
+      setIsSubmit(true)
       const res = await axios.post(
         `${API_BASE}/tweet/create`,
         { content: data.content },
@@ -62,8 +65,9 @@ export default function TweetForm({ isOpen, onClose, onPost }) {
       setText("");
       reset({ content: "" });
       onClose?.();
-      onPost?.(res.data);
+      setIsSubmit(false)
     } catch (err) {
+      setIsSubmit(false)
       const detail = err.response?.data?.detail;
       const status = err.response?.status;
       if (status === 401) {
@@ -147,7 +151,7 @@ export default function TweetForm({ isOpen, onClose, onPost }) {
                   <div className="spacer" />
 
                   <button type="submit" className="post-btn">
-                    Post
+                    {isSubmit ? "posting..." : "post"}
                   </button>
                 </div>
               </form>
