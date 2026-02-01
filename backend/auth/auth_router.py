@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Response
+from fastapi.responses import JSONResponse
 from db.db_tables import User
 from db.db_connection import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -40,7 +41,16 @@ async def login_user_for_accessToken(
         data={"sub": my_user.username},
         expires_token_time=access_token_expires,
     )
-    return Token(access_token=access_token, token_type="bearer")
+    Response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        max_age=2000,
+        samesite="lax",
+    )
+    return JSONResponse(
+        status_code=status.HTTP_200_OK, content="login user successfully"
+    )
 
 
 # create user
