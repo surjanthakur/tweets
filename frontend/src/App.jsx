@@ -6,45 +6,30 @@ import "./App.css";
 import { SidebarSection, Loader } from "./components/index";
 import { AuthContexProvider } from "./context/loginContext";
 
-function App() {
+// Configure axios to send credentials with requests
+axios.defaults.withCredentials = true;
+
+export default function App() {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem("access_token");
-    if (storedToken) {
-      setToken(storedToken);
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Fetch user when token is available (e.g. after refresh)
-  useEffect(() => {
-    if (token) {
-      currUser(token).finally(() => setIsLoading(false));
-    }
-  }, [token]);
-
   // Fetch current user when token changes
-  const currUser = async (authToken) => {
+  const currUser = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/auth/current", {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
+      const response = await axios.get("http://127.0.0.1:8000/auth/current");
       if (!response.data) {
-        throw new Error("Invalid token");
+        throw new Error("Invalid user");
+      } else {
+        setUser(response.data);
+        return true;
       }
-      setUser(response.data);
     } catch (error) {
       console.error("Failed to fetch user:", error);
-      logout(); // Auto-logout on invalid token
+      setUser(null);
+      setIsLoading(false);
     }
   };
 
-  // login function (backend expects form-urlencoded per OAuth2PasswordRequestForm)
-  // Returns true if login success, false if failed (caller can show toast/redirect accordingly)
   const loginUser = async (username, password) => {
     try {
       const params = new URLSearchParams();
@@ -57,11 +42,11 @@ function App() {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
         },
       );
-      const { access_token } = response.data;
-      if (!access_token) return false;
-      localStorage.setItem("access_token", access_token);
-      setToken(access_token);
-      await currUser(access_token); // Fetch user after login
+      if (!response.data) {
+        return false;
+      }
+      await currUser();
+      setIsLoading(false);
       return true;
     } catch (error) {
       console.log("login error:", error);
@@ -81,22 +66,38 @@ function App() {
       );
       if (!response.data) throw new Error("Registration failed");
       setUser(response.data);
+      setIsLoading(false);
       return true;
     } catch (error) {
+      console.error("Registration error:", error);
       throw new Error("Registration failed");
     }
   };
 
   // Logout function
-  const logout = () => {
-    toast('logged out', {
-      icon: '💁',
-    });
-    localStorage.removeItem("access_token");
-    setUser(null);
-    setToken(null);
-    setIsLoading(false);
+  const logout = async () => {
+    try {
+      const res = await axios.post("http://127.0.0.1:8000/auth/logout");
+      if (res.status === 200) {
+        setUser(null);
+        setIsLoading(false);
+        toast("logged out", {
+          icon: "💁",
+        });
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
+
+  // Check if user is logged in on component mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      await currUser();
+      setIsLoading(false);
+    };
+    checkAuth();
+  }, []);
 
   const location = useLocation();
   const isLoginOrRegister =
@@ -121,7 +122,6 @@ function App() {
       <AuthContexProvider
         value={{
           user,
-          token,
           isLoading,
           loginUser,
           logout,
@@ -147,5 +147,3 @@ function App() {
     </>
   );
 }
-
-export default App;

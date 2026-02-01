@@ -46,7 +46,7 @@ async def login_user_for_accessToken(
         value=access_token,
         httponly=True,
         max_age=2000,
-        samesite="lax",
+        samesite=None,
     )
     return JSONResponse(
         status_code=status.HTTP_200_OK, content="login user successfully"
@@ -85,3 +85,15 @@ async def create_user(user_data: request_user, db: AsyncSession = Depends(get_se
 )
 async def current_user(user: Annotated[User, Depends(get_current_user)]):
     return user
+
+
+@auth_router.post(
+    "/logout",
+    status_code=status.HTTP_200_OK,
+    summary="Logout user and clear access token",
+)
+def logout_user(res: Response):
+    res.delete_cookie("access_token")
+    return JSONResponse(
+        status_code=status.HTTP_200_OK, content={"message": "Logout successful"}
+    )

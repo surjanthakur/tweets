@@ -3,11 +3,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/loginContext";
 import "./css/createprofile.css";
 
 const CreateProfileForm = () => {
-  const { token } = useAuth();
   const navigate = useNavigate();
   const {
     register,
@@ -27,10 +25,6 @@ const CreateProfileForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (data) => {
-    if (!token) {
-      toast.error("Please log in to create a profile.");
-      return;
-    }
     setIsSubmitting(true);
     try {
       await axios.post(
@@ -44,7 +38,6 @@ const CreateProfileForm = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
         },
       );

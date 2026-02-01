@@ -24,7 +24,10 @@ const validations = {
   },
   profession: {
     required: "Profession is required",
-    minLength: { value: 3, message: "Profession must be at least 3 characters" },
+    minLength: {
+      value: 3,
+      message: "Profession must be at least 3 characters",
+    },
     maxLength: { value: 50, message: "Profession cannot exceed 50 characters" },
   },
   location: {
@@ -41,7 +44,6 @@ const validations = {
 
 export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
   const textareaRef = useRef(null);
-  const { token } = useAuth();
   const {
     register,
     handleSubmit,
@@ -54,12 +56,10 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
 
   // Fetch current profile when modal opens and pre-fill form
   useEffect(() => {
-    if (!isOpen || !token) return;
+    if (!isOpen) return;
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/profile/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await axios.get(`${API_BASE}/profile/me`, {});
         reset({
           name: res.data.name ?? "",
           bio: res.data.bio ?? "",
@@ -67,12 +67,12 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
           location: res.data.location ?? "",
         });
       } catch (err) {
-        console.error("Failed to fetch profile for edit:", err);
         toast.error("Could not load profile.");
+        console.error("Failed to fetch profile for edit:", err);
       }
     };
     fetchProfile();
-  }, [isOpen, token, reset]);
+  }, [isOpen, reset]);
 
   // Auto-grow textarea
   useEffect(() => {
@@ -90,10 +90,6 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSave = async (data) => {
-    if (!token) {
-      toast.error("Please log in to update profile.");
-      return;
-    }
     setIsSubmitting(true);
     try {
       await axios.put(
@@ -107,7 +103,6 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
         },
       );
@@ -132,7 +127,12 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
         <form onSubmit={handleSubmit(onSave)}>
           {/* Header */}
           <div className="profile-header">
-            <button type="button" className="close-btn" onClick={onClose} aria-label="Close">
+            <button
+              type="button"
+              className="close-btn"
+              onClick={onClose}
+              aria-label="Close"
+            >
               <X size={24} />
             </button>
             <h2>Edit profile</h2>
@@ -146,7 +146,6 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
           </div>
           {/* Body */}
           <div className="profile-body">
-
             <div className="form-group">
               <label htmlFor="name">Name</label>
               <input
@@ -190,7 +189,9 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
                 {...register("profession", validations.profession)}
               />
               {errors.profession && (
-                <span className="error-message">{errors.profession.message}</span>
+                <span className="error-message">
+                  {errors.profession.message}
+                </span>
               )}
             </div>
 

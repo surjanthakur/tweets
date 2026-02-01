@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/loginContext";
 import "./css/profilePage.css";
 import { ProfileEditForm } from "./index";
-import {Loader} from "../components/index"
+import { Loader } from "../components/index";
 
 const DEFAULT_AVATAR =
   "https://api.dicebear.com/7.x/avataaars/svg?seed=profile";
@@ -18,15 +18,12 @@ export default function ProfilePage() {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { user, token } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const fetchProfile = async () => {
-    if (!token) return;
     try {
-      const res = await axios.get("http://127.0.0.1:8000/profile/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get("http://127.0.0.1:8000/profile/me", {});
       setProfile(res.data);
     } catch (err) {
       if (err.response?.status === 404) {
@@ -40,12 +37,12 @@ export default function ProfilePage() {
 
   useEffect(() => {
     fetchProfile();
-  }, [token, navigate]);
+  }, [navigate]);
 
   if (loading) {
     return (
       <div className="profile-loader flex justify-center align-middle mt-96">
-      <Loader/>
+        <Loader />
       </div>
     );
   }
@@ -108,7 +105,8 @@ export default function ProfilePage() {
               <div className="extra-info">
                 {profile.location && (
                   <span className="location">
-                    <MapPin size={16} /> {profile.location}. <span>{profile.profession}</span>
+                    <MapPin size={16} /> {profile.location}.{" "}
+                    <span>{profile.profession}</span>
                   </span>
                 )}
               </div>
