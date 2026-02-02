@@ -26,7 +26,7 @@ export default function App() {
     } catch (error) {
       console.error("Failed to fetch user:", error);
       setUser(null);
-      setIsLoading(false);
+      return false;
     }
   };
 
@@ -42,12 +42,12 @@ export default function App() {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
         },
       );
-      if (!response.data) {
-        return false;
+      if (response.data?.user) {
+        setUser(response.data?.user);
+        setIsLoading(false);
+        return true;
       }
-      await currUser();
-      setIsLoading(false);
-      return true;
+      return false;
     } catch (error) {
       console.log("login error:", error);
       const status = error.response?.status;
