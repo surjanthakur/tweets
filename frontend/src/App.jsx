@@ -13,14 +13,16 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState(null);
 
+  // check if token exist
   useEffect(() => {
     if (token) {
-      localStorage.setItem("token", token);
+      localStorage.setItem("access_token", token);
     } else {
-      localStorage.removeItem("token");
+      localStorage.removeItem("access_token");
     }
   }, [token]);
 
+  // store current user token
   useEffect(() => {
     const storedToken = localStorage.getItem("access_token");
     if (storedToken) {
@@ -64,16 +66,17 @@ export default function App() {
   // login user
   const loginUser = async (username, password) => {
     try {
-      const params = new URLSearchParams();
-      params.append("username", username);
-      params.append("password", password);
-      const response = await axios.post("/auth/login", params, {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      });
-      const { access_token } = response.data;
-      if (access_token) {
-        setToken(access_token);
-        getCurrentUser(access_token);
+      const response = await axios.post(
+        "/auth/login",
+        { username, password },
+        {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        },
+      );
+      const { token } = response.data;
+      if (token) {
+        setToken(token);
+        getCurrentUser(token);
         setIsLoading(false);
         toast.success("Logged in successfully!");
         return true;

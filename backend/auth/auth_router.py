@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException, status, Depends
-from fastapi.responses import JSONResponse
 from db.db_tables import User
 from db.db_connection import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -21,7 +20,7 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 # login the user
 @auth_router.post(
-    "/login", status_code=status.HTTP_200_OK, summary=" login user and get access token"
+    "/login", status_code=status.HTTP_200_OK, summary="login user and get access token"
 )
 async def login_user_for_accessToken(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],

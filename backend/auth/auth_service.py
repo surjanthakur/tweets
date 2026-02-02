@@ -13,7 +13,6 @@ from typing import Annotated
 from jwt.exceptions import InvalidTokenError
 from .auth_model import TokenData
 from db.db_connection import get_session
-from fastapi import Request
 
 load_dotenv()
 

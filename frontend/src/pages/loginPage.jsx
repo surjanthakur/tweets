@@ -1,7 +1,6 @@
 import { User, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/loginContext";
 import "./css/login.css";
@@ -28,14 +27,9 @@ const LoginForm = () => {
     setIsLogin(true);
     const result = await loginUser(data.username, data.password);
     if (result === true) {
-      toast.success("Logged in successfully!");
       setIsLogin(false);
       setTimeout(() => navigate("/"), 1500);
-    } else if (result === "server_error") {
-      toast.error("Server error - try again later.");
-      setIsLogin(false);
     } else {
-      toast.error("Invalid credentials. Please try again.");
       setIsLogin(false);
     }
   };
