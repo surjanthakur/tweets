@@ -41,16 +41,17 @@ async def login_user_for_accessToken(
         data={"sub": my_user.username},
         expires_token_time=access_token_expires,
     )
-    Response.set_cookie(
+    response = JSONResponse(
+        status_code=status.HTTP_200_OK, content="login user successfully"
+    )
+    response.set_cookie(
         key="access_token",
         value=access_token,
         httponly=True,
         max_age=2000,
         samesite=None,
     )
-    return JSONResponse(
-        status_code=status.HTTP_200_OK, content="login user successfully"
-    )
+    return response
 
 
 # create user
