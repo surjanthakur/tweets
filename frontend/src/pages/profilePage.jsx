@@ -23,7 +23,7 @@ export default function ProfilePage() {
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:8000/profile/me", {});
+      const res = await axios.get("http://127.0.0.1:8000/profile/me");
       setProfile(res.data);
     } catch (err) {
       if (err.response?.status === 404) {

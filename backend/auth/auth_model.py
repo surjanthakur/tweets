@@ -16,10 +16,5 @@ class request_user(BaseModel):
     password: Annotated[str, Field(..., min_length=4, title="password field")]
 
 
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-
 class TokenData(BaseModel):
     username: str | None = None

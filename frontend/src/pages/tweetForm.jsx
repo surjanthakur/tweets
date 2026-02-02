@@ -11,10 +11,9 @@ import "./css/tweetform.css";
 const API_BASE = "http://127.0.0.1:8000";
 
 export default function TweetForm({ isOpen, onClose }) {
-  const [isSubmit , setIsSubmit] = useState(false)
+  const [isSubmit, setIsSubmit] = useState(false);
   const [text, setText] = useState("");
   const textareaRef = useRef(null);
-
 
   const {
     register,
@@ -53,21 +52,19 @@ export default function TweetForm({ isOpen, onClose }) {
       return;
     }
     try {
-      setIsSubmit(true)
-      const res = await axios.post(
-        `${API_BASE}/tweet/create`,
-        { content: data.content },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      toast.success("posted new tweet");
-      setText("");
-      reset({ content: "" });
-      onClose?.();
-      setIsSubmit(false)
+      setIsSubmit(true);
+      const res = await axios.post(`${API_BASE}/tweet/create`, {
+        content: data.content,
+      });
+      if (res.status == 200) {
+        toast.success("posted new tweet");
+        setText("");
+        reset({ content: "" });
+        onClose?.();
+        setIsSubmit(false);
+      }
     } catch (err) {
-      setIsSubmit(false)
+      setIsSubmit(false);
       const detail = err.response?.data?.detail;
       const status = err.response?.status;
       if (status === 401) {

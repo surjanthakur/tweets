@@ -43,6 +43,7 @@ const validations = {
 };
 
 export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
+  const { user, isLoading } = useAuth();
   const textareaRef = useRef(null);
   const {
     register,
@@ -54,12 +55,16 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
 
   const bio = watch("bio");
 
-  // Fetch current profile when modal opens and pre-fill form
   useEffect(() => {
+    if (isLoading) return;
+    if (!user) {
+      toast.error("you have to login first!");
+      return null;
+    }
     if (!isOpen) return;
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/profile/me`, {});
+        const res = await axios.get(`${API_BASE}/profile/me`);
         reset({
           name: res.data.name ?? "",
           bio: res.data.bio ?? "",
@@ -72,7 +77,7 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
       }
     };
     fetchProfile();
-  }, [isOpen, reset]);
+  }, [isOpen, reset, user, isLoading]);
 
   // Auto-grow textarea
   useEffect(() => {

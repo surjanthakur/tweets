@@ -4,9 +4,12 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import "./css/createprofile.css";
+import { useAuth } from "../context/loginContext";
 
 const CreateProfileForm = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
   const {
     register,
     handleSubmit,
@@ -27,6 +30,10 @@ const CreateProfileForm = () => {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
+      if (!user) {
+        toast.error("you have to login first");
+        return;
+      }
       await axios.post(
         "http://127.0.0.1:8000/profile/create",
         {

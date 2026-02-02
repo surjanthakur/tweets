@@ -5,7 +5,7 @@ from db.db_connection import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
-from .auth_model import Token, request_user
+from .auth_model import request_user
 from .auth_service import (
     create_access_token,
     Authenticate_user,
@@ -26,7 +26,7 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
 async def login_user_for_accessToken(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session_db: AsyncSession = Depends(get_session),
-) -> Token:
+):
     my_user = await Authenticate_user(
         username=form_data.username, password=form_data.password, db=session_db
     )

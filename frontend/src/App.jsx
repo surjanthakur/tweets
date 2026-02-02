@@ -87,6 +87,7 @@ export default function App() {
       }
     } catch (error) {
       console.error("Logout error:", error);
+      throw new Error("error while logout user:", error);
     }
   };
 
