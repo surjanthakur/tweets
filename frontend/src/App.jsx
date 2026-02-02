@@ -8,42 +8,46 @@ import { AuthContexProvider } from "./context/loginContext";
 
 // Configure axios to send credentials with requests
 axios.defaults.withCredentials = true;
+axios.defaults.baseURL = "http://127.0.0.1:8000";
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch current user when token changes
+  // Fetch current user
   const currUser = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/auth/current");
+      const response = await axios.get("/auth/current");
       if (!response.data) {
-        throw new Error("Invalid user");
+        throw new Error("cant get curr user");
       } else {
         setUser(response.data);
+        console.log(response.data);
         return true;
       }
     } catch (error) {
+      if (error.response?.status === 401) {
+        setUser(null);
+        return false;
+      }
       console.error("Failed to fetch user:", error);
       setUser(null);
       return false;
     }
   };
 
+  // login user
   const loginUser = async (username, password) => {
     try {
       const params = new URLSearchParams();
       params.append("username", username);
       params.append("password", password);
-      const response = await axios.post(
-        "http://127.0.0.1:8000/auth/login",
-        params,
-        {
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        },
-      );
+      const response = await axios.post("/auth/login", params, {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
       if (response.data?.user) {
         setUser(response.data?.user);
+        console.log(response.data?.user);
         setIsLoading(false);
         return true;
       }
@@ -56,11 +60,11 @@ export default function App() {
     }
   };
 
-  // User registration
+  // create user
   const createUser = async (username, email, password) => {
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/auth/register",
+        "/auth/register",
         { username, email, password },
         { headers: { "Content-Type": "application/json" } },
       );
@@ -74,10 +78,10 @@ export default function App() {
     }
   };
 
-  // Logout function
+  // Logout user
   const logout = async () => {
     try {
-      const res = await axios.post("http://127.0.0.1:8000/auth/logout");
+      const res = await axios.post("/auth/logout");
       if (res.status === 200) {
         setUser(null);
         setIsLoading(false);

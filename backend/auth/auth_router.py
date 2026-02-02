@@ -12,7 +12,7 @@ from .auth_service import (
     get_hashed_password,
     get_current_user,
 )
-from datetime import timedelta
+from datetime import timedelta, timezone, datetime
 from sqlmodel import select
 
 
@@ -24,11 +24,14 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
     "/login", status_code=status.HTTP_200_OK, summary=" login user and get access token"
 )
 async def login_user_for_accessToken(
+    response: Response,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     session_db: AsyncSession = Depends(get_session),
 ):
     my_user = await Authenticate_user(
-        username=form_data.username, password=form_data.password, db=session_db
+        username=form_data.username,
+        password=form_data.password,
+        db=session_db,
     )
     if not my_user:
         raise HTTPException(
@@ -36,11 +39,12 @@ async def login_user_for_accessToken(
             detail="Invalid credentials handle name or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token_expires = timedelta(minutes=30)
+    access_token_expires = datetime.now(timezone.utc) + timedelta(minutes=30)
     access_token = create_access_token(
         data={"sub": my_user.username},
         expires_token_time=access_token_expires,
     )
+
     response = JSONResponse(
         status_code=status.HTTP_200_OK,
         content={
@@ -51,13 +55,16 @@ async def login_user_for_accessToken(
             },
         },
     )
+
     response.set_cookie(
         key="access_token",
-        value=access_token,
+        value=f"Bearer {access_token}",
         httponly=True,
-        max_age=1800,
-        samesite="lax",
+        expires=access_token_expires,
+        secure=False,
+        path="/",
     )
+    print(f"response cookies: {response}")
     return response
 
 
@@ -86,22 +93,20 @@ async def create_user(user_data: request_user, db: AsyncSession = Depends(get_se
 
 
 # get current user
-@auth_router.get(
-    "/current",
-    status_code=status.HTTP_200_OK,
-    summary="return current user details with the access_token",
-)
+@auth_router.get("/current", status_code=status.HTTP_200_OK)
 async def current_user(user: Annotated[User, Depends(get_current_user)]):
+    print(f"current user: {user}")
     return user
 
 
-@auth_router.post(
-    "/logout",
-    status_code=status.HTTP_200_OK,
-    summary="Logout user and clear access token",
-)
-def logout_user(res: Response):
-    res.delete_cookie("access_token")
-    return JSONResponse(
+# logout user
+@auth_router.post("/logout", status_code=status.HTTP_200_OK)
+def logout_user():
+    response = JSONResponse(
         status_code=status.HTTP_200_OK, content={"message": "Logout successful"}
     )
+    response.delete_cookie(
+        key="access_token",
+        httponly=True,
+    )
+    return response

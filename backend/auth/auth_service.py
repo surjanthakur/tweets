@@ -22,7 +22,6 @@ secret_key = os.getenv("SECRET_KEY")
 algorithm = os.getenv("ALGORITHM")
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 password_hash = PasswordHash.recommended()
 
 
@@ -59,10 +58,10 @@ async def Authenticate_user(username: str, password: str, db: AsyncSession):
 # create access token and return it
 def create_access_token(data: dict, expires_token_time: timedelta | None = None):
     user_data = data.copy()
-    if expires_token_time:
-        expire = datetime.now(timezone.utc) + expires_token_time
-    else:
+    if not expires_token_time:
         expire = datetime.now(timezone.utc) + timedelta(minutes=30)
+    else:
+        expire = expires_token_time
 
     user_data.update({"exp": expire})
     access_token = jwt.encode(user_data, secret_key, algorithm=algorithm)
@@ -75,6 +74,7 @@ async def get_current_user(
     db: AsyncSession = Depends(get_session),
 ):
     token = request.cookies.get("access_token")
+    print(f"get the current token in curr user: {token}")
     if not token:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
