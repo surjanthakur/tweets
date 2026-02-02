@@ -7,8 +7,9 @@ import "./css/createprofile.css";
 import { useAuth } from "../context/loginContext";
 
 const CreateProfileForm = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const {
     register,
@@ -25,17 +26,21 @@ const CreateProfileForm = () => {
     mode: "onChange",
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const onSubmit = async (data) => {
+    if (!user) {
+      toast.error("You have to login first");
+      return;
+    }
+
+    if (!token) {
+      toast.error("Session expired. Please login again.");
+      navigate("/login");
+      return;
+    }
     setIsSubmitting(true);
     try {
-      if (!user) {
-        toast.error("you have to login first");
-        return;
-      }
-      await axios.post(
-        "http://127.0.0.1:8000/profile/create",
+      const res = await axios.post(
+        "/profile/create",
         {
           name: data.name.trim(),
           profession: data.profession.trim(),
@@ -45,19 +50,36 @@ const CreateProfileForm = () => {
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         },
       );
-      toast.success("Profile created successfully!");
+      toast.success("Profile created successfully! 🎉");
       navigate("/profile");
     } catch (error) {
       console.error("Error creating profile:", error);
-      toast.error("Failed to create profile. Please try again.");
+
+      const status = error.response?.status;
+      const detail = error.response?.data?.detail;
+
+      if (status === 401) {
+        toast.error("Session expired. Please login again.");
+        navigate("/login");
+      } else if (
+        status === 409 ||
+        (status === 400 && detail?.includes("already exists"))
+      ) {
+        toast.error("Profile already exists. Redirecting...");
+        navigate("/profile");
+      } else if (status >= 500) {
+        toast.error("Server error. Please try again later.");
+      } else {
+        toast.error(detail || "Failed to create profile. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return (
     <div className="profile-container">
       <div className="create-profile-card">

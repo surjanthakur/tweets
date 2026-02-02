@@ -6,33 +6,57 @@ import "./App.css";
 import { SidebarSection, Loader } from "./components/index";
 import { AuthContexProvider } from "./context/loginContext";
 
-// Configure axios to send credentials with requests
-axios.defaults.withCredentials = true;
 axios.defaults.baseURL = "http://127.0.0.1:8000";
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("access_token");
+    if (storedToken) {
+      setToken(storedToken);
+      currUser(storedToken);
+    } else {
+      setIsLoading(false);
+    }
+  }, []);
 
   // Fetch current user
-  const currUser = async () => {
+  const getCurrentUser = async (authToken) => {
     try {
-      const response = await axios.get("/auth/current");
+      const response = await axios.get("/auth/current", {
+        headers: {
+          Authorization: `Bearer ${authToken || token}`,
+        },
+      });
       if (!response.data) {
         throw new Error("cant get curr user");
       } else {
         setUser(response.data);
-        console.log(response.data);
+        setIsLoading(false);
         return true;
       }
     } catch (error) {
       if (error.response?.status === 401) {
         setUser(null);
+        setToken(null);
         toast.error("Session expired - please log in again");
+        setIsLoading(false);
         return false;
       }
       console.error("Failed to fetch user:", error);
       setUser(null);
+      setIsLoading(false);
       return false;
     }
   };
@@ -46,13 +70,17 @@ export default function App() {
       const response = await axios.post("/auth/login", params, {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
-      if (response.data?.user) {
-        setUser(response.data?.user);
-        console.log(response.data?.user);
+      const { access_token } = response.data;
+      if (access_token) {
+        setToken(access_token);
+        getCurrentUser(access_token);
         setIsLoading(false);
+        toast.success("Logged in successfully!");
         return true;
+      } else {
+        toast.error("invalid credentials!");
+        return false;
       }
-      return false;
     } catch (error) {
       console.log("login error:", error);
       const status = error.response?.status;
@@ -80,20 +108,11 @@ export default function App() {
   };
 
   // Logout user
-  const logout = async () => {
-    try {
-      const res = await axios.post("/auth/logout");
-      if (res.status === 200) {
-        setUser(null);
-        setIsLoading(false);
-        toast("logged out", {
-          icon: "💁",
-        });
-      }
-    } catch (error) {
-      console.error("Logout error:", error);
-      throw new Error("error while logout user:", error);
-    }
+  const logout = () => {
+    localStorage.removeItem("access_token");
+    setToken(nulll);
+    setUser(null);
+    setIsLoading(false);
   };
 
   const location = useLocation();
@@ -118,11 +137,12 @@ export default function App() {
       />
       <AuthContexProvider
         value={{
+          token,
           user,
           isLoading,
           loginUser,
           logout,
-          currUser,
+          getCurrentUser,
           createUser,
         }}
       >

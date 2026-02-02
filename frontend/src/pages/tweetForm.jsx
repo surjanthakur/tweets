@@ -8,8 +8,6 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/loginContext";
 import "./css/tweetform.css";
 
-const API_BASE = "http://127.0.0.1:8000";
-
 export default function TweetForm({ isOpen, onClose }) {
   const [isSubmit, setIsSubmit] = useState(false);
   const [text, setText] = useState("");
@@ -51,43 +49,42 @@ export default function TweetForm({ isOpen, onClose }) {
       toast.error("Please login to post a tweet");
       return;
     }
+
     try {
       setIsSubmit(true);
-      const res = await axios.post(`${API_BASE}/tweet/create`, {
-        content: data.content,
-      });
-      if (res.status == 200) {
-        toast.success("posted new tweet");
+      const res = await axios.post(
+        "/tweet/create",
+        { content: data.content },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (res.status === 200 || res.status === 201) {
+        toast.success("Posted new tweet successfully! 🎉");
         setText("");
         reset({ content: "" });
         onClose?.();
-        setIsSubmit(false);
       }
     } catch (err) {
-      setIsSubmit(false);
+      console.error("Error posting tweet:", err);
+      console.error("Error details:", err.response?.data);
+
       const detail = err.response?.data?.detail;
       const status = err.response?.status;
       if (status === 401) {
         toast.error("Session expired. Please log in again.");
-      } else if (
-        status === 404 &&
-        typeof detail === "string" &&
-        detail.includes("Profile")
-      ) {
-        toast.error("Create a profile first before tweeting.");
-      } else if (status === 422 && err.response?.data?.detail) {
-        const msg = Array.isArray(detail)
-          ? detail.map((e) => e.msg).join(", ")
-          : String(detail);
-        toast.error(msg || "Invalid tweet content");
       } else if (status >= 500) {
         toast.error(detail || "Server error. Try again later.");
       } else {
         toast.error(detail || err.message || "Failed to create tweet");
       }
+    } finally {
+      setIsSubmit(false);
     }
   };
-
   const modalContent = (
     <div className="tweet-modal-overlay" onClick={onClose}>
       <div className="tweet-modal" onClick={(e) => e.stopPropagation()}>

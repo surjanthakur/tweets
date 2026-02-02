@@ -43,7 +43,8 @@ const validations = {
 };
 
 export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
-  const { user, isLoading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user, isLoading, token } = useAuth();
   const textareaRef = useRef(null);
   const {
     register,
@@ -57,14 +58,24 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
 
   useEffect(() => {
     if (isLoading) return;
+
     if (!user) {
-      toast.error("you have to login first!");
-      return null;
+      toast.error("You have to login first!");
+      return;
+    }
+    if (!token) {
+      toast.error("Session expired. Please login again.");
+      return;
     }
     if (!isOpen) return;
+
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`${API_BASE}/profile/me`);
+        const res = await axios.get("/profile/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         reset({
           name: res.data.name ?? "",
           bio: res.data.bio ?? "",
@@ -72,12 +83,72 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
           location: res.data.location ?? "",
         });
       } catch (err) {
-        toast.error("Could not load profile.");
         console.error("Failed to fetch profile for edit:", err);
+        console.error("Error details:", err.response?.data);
+
+        const status = err.response?.status;
+        const detail = err.response?.data?.detail;
+
+        if (status === 401) {
+          toast.error("Session expired. Please login again.");
+        } else if (status === 404) {
+          toast.error("Profile not found.");
+        } else {
+          toast.error(detail || "Could not load profile.");
+        }
       }
     };
+
     fetchProfile();
-  }, [isOpen, reset, user, isLoading]);
+  }, [isOpen, reset, user, isLoading, token]);
+
+  // on profile submit
+  const onSave = async (data) => {
+    if (!token) {
+      toast.error("Please login to update profile");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const res = await axios.put(
+        "/profile/edit",
+        {
+          name: data.name.trim(),
+          profession: data.profession.trim(),
+          location: data.location.trim(),
+          bio: data.bio.trim(),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      toast.success("Profile updated! ✨");
+      onSuccess?.();
+      onClose?.();
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+      console.error("Error details:", err.response?.data);
+
+      const status = err.response?.status;
+      const detail = err.response?.data?.detail;
+
+      if (status === 401) {
+        toast.error("Session expired. Please login again.");
+      } else if (status >= 500) {
+        toast.error("Server error. Please try again later.");
+      } else {
+        toast.error(detail || "Failed to update profile.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const canSubmit = isValid && !isSubmitting;
+  if (!isOpen) return null;
 
   // Auto-grow textarea
   useEffect(() => {
@@ -91,40 +162,6 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
     window.addEventListener("resize", resetHeight);
     return () => window.removeEventListener("resize", resetHeight);
   }, [bio]);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const onSave = async (data) => {
-    setIsSubmitting(true);
-    try {
-      await axios.put(
-        `${API_BASE}/profile/edit`,
-        {
-          name: data.name.trim(),
-          profession: data.profession.trim(),
-          location: data.location.trim(),
-          bio: data.bio.trim(),
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      );
-      toast.success("Profile updated!");
-      onSuccess?.();
-      onClose?.();
-    } catch (err) {
-      console.error("Failed to update profile:", err);
-      toast.error(err.response?.data?.detail ?? "Failed to update profile.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const canSubmit = isValid && !isSubmitting;
-
-  if (!isOpen) return null;
 
   return (
     <div className="profile-overlay" onClick={onClose}>

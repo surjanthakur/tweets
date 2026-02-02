@@ -18,18 +18,49 @@ export default function ProfilePage() {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, token } = useAuth(); // Get token from context
   const navigate = useNavigate();
 
   const fetchProfile = async () => {
+    if (!token) {
+      console.error("No token available");
+      toast.error("Please login to view profile");
+      navigate("/login");
+      setLoading(false);
+      return;
+    }
+
     try {
-      const res = await axios.get("/profile/me");
-      setProfile(res.data);
-    } catch (err) {
-      if (err.response?.status === 404) {
-        navigate("/createProfile");
+      setLoading(true);
+      const res = await axios.get("/profile/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 200 && res.data) {
+        setProfile(res.data);
+        return true;
       }
+    } catch (err) {
       console.error("Failed to fetch profile:", err);
+      console.error("Error details:", err.response?.data);
+
+      const status = err.response?.status;
+      const detail = err.response?.data?.detail;
+
+      if (status === 404) {
+        console.log("Profile not found, redirecting to create profile");
+        toast.error("Profile not found. Please create one.");
+        navigate("/createProfile");
+      } else if (status === 401) {
+        toast.error("Session expired. Please log in again.");
+        navigate("/login");
+      } else if (status >= 500) {
+        toast.error("Server error. Please try again later.");
+      } else {
+        toast.error(detail || "Failed to load profile");
+      }
     } finally {
       setLoading(false);
     }
@@ -37,7 +68,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     fetchProfile();
-  }, [navigate]);
+  }, [token]);
 
   if (loading) {
     return (

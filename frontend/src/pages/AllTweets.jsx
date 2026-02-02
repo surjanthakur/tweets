@@ -3,7 +3,7 @@ import { Heart, Reply } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import "./css/alltweets.css";
-import {Loader} from "../components/index"
+import { Loader } from "../components/index";
 
 function formatTweetTime(isoString) {
   if (!isoString) return "";
@@ -29,7 +29,7 @@ export default function AllTweets() {
     (async () => {
       setLoading(true);
       try {
-        const res = await axios.get("http://127.0.0.1:8000/tweet/all");
+        const res = await axios.get("/tweet/all");
         if (cancelled) return;
         setTweets(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
@@ -44,7 +44,7 @@ export default function AllTweets() {
           err.message ||
           "Could not load tweets. Please try again.";
         toast.error(
-          typeof message === "string" ? message : JSON.stringify(message)
+          typeof message === "string" ? message : JSON.stringify(message),
         );
         setTweets([]);
       } finally {
@@ -59,7 +59,7 @@ export default function AllTweets() {
   if (loading) {
     return (
       <div className="loader-div">
-         <Loader/>
+        <Loader />
       </div>
     );
   }
@@ -73,7 +73,7 @@ export default function AllTweets() {
   }
 
   return (
-<>
+    <>
       {tweets.map((tweet, idx) => (
         <article key={idx} className="tweet-card">
           <div className="tweet-header">
@@ -101,6 +101,6 @@ export default function AllTweets() {
           </div>
         </article>
       ))}
-</>
+    </>
   );
 }
