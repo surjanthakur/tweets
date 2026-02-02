@@ -10,29 +10,32 @@ axios.defaults.baseURL = "http://127.0.0.1:8000";
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [token, setToken] = useState(null);
 
-  // check if token exist
   useEffect(() => {
-    if (token) {
-      localStorage.setItem("access_token", token);
-    } else {
-      localStorage.removeItem("access_token");
-    }
-  }, [token]);
+    const validateUser = async () => {
+      const stored_token = localStorage.getItem("access_token");
 
-  // store current user token
-  useEffect(() => {
-    const storedToken = localStorage.getItem("access_token");
-    if (storedToken) {
-      setToken(storedToken);
-      currUser(storedToken);
-    } else {
-      setIsLoading(false);
-    }
+      if (stored_token) {
+        setIsLoading(true);
+        setToken(stored_token);
+        try {
+          await getCurrentUser(stored_token);
+        } catch (error) {
+          localStorage.removeItem("access_token");
+          setToken(null);
+          setUser(null);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        setIsLoading(false);
+      }
+    };
+
+    validateUser();
   }, []);
-
   // Fetch current user
   const getCurrentUser = async (authToken) => {
     try {
@@ -45,7 +48,6 @@ export default function App() {
         throw new Error("cant get curr user");
       } else {
         setUser(response.data);
-        setIsLoading(false);
         return true;
       }
     } catch (error) {
@@ -53,12 +55,10 @@ export default function App() {
         setUser(null);
         setToken(null);
         toast.error("Session expired - please log in again");
-        setIsLoading(false);
         return false;
       }
       console.error("Failed to fetch user:", error);
       setUser(null);
-      setIsLoading(false);
       return false;
     }
   };
@@ -66,6 +66,7 @@ export default function App() {
   // login user
   const loginUser = async (username, password) => {
     try {
+      setIsLoading(true);
       const response = await axios.post(
         "/auth/login",
         { username, password },
@@ -75,17 +76,20 @@ export default function App() {
       );
       const { token } = response.data;
       if (token) {
+        localStorage.setItem("access_token", token);
         setToken(token);
-        getCurrentUser(token);
+        await getCurrentUser(token);
         setIsLoading(false);
         toast.success("Logged in successfully!");
         return true;
       } else {
         toast.error("invalid credentials!");
+        setIsLoading(false);
         return false;
       }
     } catch (error) {
       console.log("login error:", error);
+      setIsLoading(false);
       const status = error.response?.status;
       if (status >= 500) return "server_error";
       return false;
@@ -95,6 +99,7 @@ export default function App() {
   // create user
   const createUser = async (username, email, password) => {
     try {
+      setIsLoading(true);
       const response = await axios.post(
         "/auth/register",
         { username, email, password },
@@ -106,6 +111,7 @@ export default function App() {
       return true;
     } catch (error) {
       console.error("Registration error:", error);
+      setIsLoading(false);
       throw new Error("Registration failed");
     }
   };
@@ -113,7 +119,7 @@ export default function App() {
   // Logout user
   const logout = () => {
     localStorage.removeItem("access_token");
-    setToken(nulll);
+    setToken(null);
     setUser(null);
     setIsLoading(false);
   };
@@ -133,11 +139,6 @@ export default function App() {
 
   return (
     <>
-      <Toaster
-        position="top-center"
-        toastOptions={{ duration: 3000 }}
-        reverseOrder={false}
-      />
       <AuthContexProvider
         value={{
           token,
@@ -151,10 +152,15 @@ export default function App() {
       >
         {isLoading ? (
           <div className="app-layout">
-            wait checking your credentials 🧐 <Loader />
+            browser security checking 🧐 <Loader />
           </div>
         ) : (
           <div className="app-layout">
+            <Toaster
+              position="top-center"
+              toastOptions={{ duration: 2000 }}
+              reverseOrder={false}
+            />
             <div className="box-1">
               <SidebarSection />
             </div>

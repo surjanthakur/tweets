@@ -13,8 +13,6 @@ const defaultValues = {
   location: "",
 };
 
-const API_BASE = "http://127.0.0.1:8000";
-
 // Validation rules matching backend RequestProfile
 const validations = {
   name: {
@@ -58,17 +56,6 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
 
   useEffect(() => {
     if (isLoading) return;
-
-    if (!user) {
-      toast.error("You have to login first!");
-      return;
-    }
-    if (!token) {
-      toast.error("Session expired. Please login again.");
-      return;
-    }
-    if (!isOpen) return;
-
     const fetchProfile = async () => {
       try {
         const res = await axios.get("/profile/me", {
@@ -104,13 +91,9 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
 
   // on profile submit
   const onSave = async (data) => {
-    if (!token) {
-      toast.error("Please login to update profile");
-      return;
-    }
     setIsSubmitting(true);
     try {
-      const res = await axios.put(
+      await axios.put(
         "/profile/edit",
         {
           name: data.name.trim(),
@@ -130,7 +113,6 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
       onClose?.();
     } catch (err) {
       console.error("Failed to update profile:", err);
-      console.error("Error details:", err.response?.data);
 
       const status = err.response?.status;
       const detail = err.response?.data?.detail;
@@ -148,7 +130,6 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
   };
 
   const canSubmit = isValid && !isSubmitting;
-  if (!isOpen) return null;
 
   // Auto-grow textarea
   useEffect(() => {
@@ -163,6 +144,7 @@ export default function ProfileEditForm({ onClose, isOpen, onSuccess }) {
     return () => window.removeEventListener("resize", resetHeight);
   }, [bio]);
 
+  if (!isOpen) return;
   return (
     <div className="profile-overlay" onClick={onClose}>
       <div className="profile-modal" onClick={(e) => e.stopPropagation()}>

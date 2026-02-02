@@ -28,7 +28,7 @@ const LoginForm = () => {
     const result = await loginUser(data.username, data.password);
     if (result === true) {
       setIsLogin(false);
-      setTimeout(() => navigate("/"), 1500);
+      navigate("/");
     } else {
       setIsLogin(false);
     }

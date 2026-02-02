@@ -18,18 +18,15 @@ export default function ProfilePage() {
   const [editFormOpen, setEditFormOpen] = useState(false);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { user, token } = useAuth(); // Get token from context
+  const { user, token } = useAuth();
   const navigate = useNavigate();
 
   const fetchProfile = async () => {
     if (!token) {
-      console.error("No token available");
-      toast.error("Please login to view profile");
+      toast.error("Please log in to view your profile");
       navigate("/login");
-      setLoading(false);
       return;
     }
-
     try {
       setLoading(true);
       const res = await axios.get("/profile/me", {
@@ -44,13 +41,11 @@ export default function ProfilePage() {
       }
     } catch (err) {
       console.error("Failed to fetch profile:", err);
-      console.error("Error details:", err.response?.data);
 
       const status = err.response?.status;
       const detail = err.response?.data?.detail;
 
       if (status === 404) {
-        console.log("Profile not found, redirecting to create profile");
         toast.error("Profile not found. Please create one.");
         navigate("/createProfile");
       } else if (status === 401) {
@@ -79,7 +74,6 @@ export default function ProfilePage() {
   }
 
   if (!profile) {
-    toast.error("profile not found!");
     return;
   }
 
@@ -121,7 +115,7 @@ export default function ProfilePage() {
 
             <div className="action-row">
               <button
-                onClick={() => setEditFormOpen(true)}
+                onClick={() => setEditFormOpen(!editFormOpen)}
                 className="edit-profile-btn"
               >
                 Edit profile
@@ -186,7 +180,7 @@ export default function ProfilePage() {
       </div>
       <ProfileEditForm
         isOpen={editFormOpen}
-        onClose={() => setEditFormOpen(false)}
+        onClose={() => setEditFormOpen(!editFormOpen)}
         onSuccess={fetchProfile}
       />
     </>

@@ -31,12 +31,6 @@ const CreateProfileForm = () => {
       toast.error("You have to login first");
       return;
     }
-
-    if (!token) {
-      toast.error("Session expired. Please login again.");
-      navigate("/login");
-      return;
-    }
     setIsSubmitting(true);
     try {
       const res = await axios.post(
