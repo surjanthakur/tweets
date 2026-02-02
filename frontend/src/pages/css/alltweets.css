@@ -1,5 +1,4 @@
-
-.loader-div{
+.loader-div {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -24,7 +23,8 @@
   background: #0f0f0f;
   border: 1px solid #222;
   color: #e0e0e0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow: hidden;
   margin-bottom: 1rem;
 }
@@ -202,6 +202,11 @@
 .action-btn.like:hover {
   background: rgba(239, 68, 68, 0.12);
   color: #f87171;
+}
+
+.action-btn.comment:hover {
+  background: rgba(28, 192, 31, 0.12);
+  color: #49de24;
 }
 
 /* Responsive adjustments */

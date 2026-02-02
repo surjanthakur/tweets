@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Heart, Reply } from "lucide-react";
+import { Heart, Reply, MessageCircleIcon as Message } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import "./css/alltweets.css";
@@ -23,6 +23,7 @@ function formatTweetTime(isoString) {
 export default function AllTweets() {
   const [tweets, setTweets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [likecount, setLikeCount] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -94,9 +95,22 @@ export default function AllTweets() {
               <Reply size={18} />
               Reply
             </button>
-            <button type="button" className="action-btn like" aria-label="Like">
+            <button
+              type="button"
+              className="action-btn comment"
+              aria-label="comment"
+            >
+              <Message size={18} />
+              comments
+            </button>
+            <button
+              onClick={() => setLikeCount(likecount + 1)}
+              type="button"
+              className="action-btn like"
+              aria-label="Like"
+            >
               <Heart size={18} />
-              Like
+              {likecount}
             </button>
           </div>
         </article>
