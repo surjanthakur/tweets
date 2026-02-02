@@ -12,7 +12,7 @@ axios.defaults.baseURL = "http://127.0.0.1:8000";
 
 export default function App() {
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Fetch current user
   const currUser = async () => {
@@ -95,15 +95,6 @@ export default function App() {
       throw new Error("error while logout user:", error);
     }
   };
-
-  // Check if user is logged in on component mount
-  useEffect(() => {
-    const checkAuth = async () => {
-      await currUser();
-      setIsLoading(false);
-    };
-    checkAuth();
-  }, []);
 
   const location = useLocation();
   const isLoginOrRegister =

@@ -18,3 +18,8 @@ class request_user(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
+
+
+class Token(BaseModel):
+    token: str
+    token_type: str

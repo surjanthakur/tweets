@@ -23,6 +23,7 @@ algorithm = os.getenv("ALGORITHM")
 
 
 password_hash = PasswordHash.recommended()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 # get hashed password
@@ -72,12 +73,10 @@ def create_access_token(
 
 # get current user by access token
 async def get_current_user(
-    request: Request,
+    token: Annotated[str, Depends(oauth2_scheme)],
     db: AsyncSession = Depends(get_session),
 ):
-    token = request.cookies.get("access_token")
-    print(f"get the current token in curr user: {token}")
-    if not token:
+    if token is None:
         raise HTTPException(status_code=401, detail="Not authenticated")
 
     credentials_exception = HTTPException(
