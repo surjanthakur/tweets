@@ -1,4 +1,4 @@
-import { User } from "lucide-react";
+import { User, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -7,7 +7,11 @@ import { useAuth } from "../context/loginContext";
 import "./css/login.css";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
+  const { loginUser } = useAuth();
   const [isLogin, setIsLogin] = useState(false);
+  const [showPass, setShowPass] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -19,9 +23,7 @@ const LoginForm = () => {
     },
     mode: "onChange",
   });
-  const navigate = useNavigate();
 
-  const { loginUser } = useAuth();
   const onSubmit = async (data) => {
     setIsLogin(true);
     const result = await loginUser(data.username, data.password);
@@ -29,6 +31,9 @@ const LoginForm = () => {
       toast.success("Logged in successfully!");
       setIsLogin(false);
       setTimeout(() => navigate("/"), 1500);
+    } else if (result === "server_error") {
+      toast.error("Server error - try again later.");
+      setIsLogin(false);
     } else {
       toast.error("Invalid credentials. Please try again.");
       setIsLogin(false);
@@ -80,7 +85,7 @@ const LoginForm = () => {
               <label htmlFor="password">Password</label>
               <input
                 id="password"
-                type="password"
+                type={showPass ? "text" : "password"}
                 placeholder="Enter your password"
                 {...register("password", {
                   required: "Password is required",
@@ -94,6 +99,9 @@ const LoginForm = () => {
                   errors.password ? "password-error" : undefined
                 }
               />
+              <button type="button" onClick={() => setShowPass(!showPass)}>
+                {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
               {errors.password && (
                 <span id="password-error" className="error-message">
                   {errors.password.message}

@@ -1,6 +1,4 @@
-import asyncio
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
 from router import profile, tweet
 from contextlib import asynccontextmanager
 import logging
@@ -38,10 +36,7 @@ app = FastAPI(
     openapi_url=None if PRODUCTION else "/openapi.json",
 )
 
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+origins = ["http://localhost:5173"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -49,7 +44,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_headers=["*"],
     allow_methods=["*"],
-    expose_headers=["*"],
+    max_age=600,
 )
 app.include_router(router=auth_router)
 app.include_router(router=profile.profile_router)

@@ -28,6 +28,7 @@ export default function App() {
     } catch (error) {
       if (error.response?.status === 401) {
         setUser(null);
+        toast.error("Session expired - please log in again");
         return false;
       }
       console.error("Failed to fetch user:", error);

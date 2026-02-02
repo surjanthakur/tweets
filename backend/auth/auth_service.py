@@ -56,9 +56,11 @@ async def Authenticate_user(username: str, password: str, db: AsyncSession):
 
 
 # create access token and return it
-def create_access_token(data: dict, expires_token_time: timedelta | None = None):
+def create_access_token(
+    data: dict, expires_token_time: datetime | timedelta | None = None
+):
     user_data = data.copy()
-    if not expires_token_time:
+    if expires_token_time is None:
         expire = datetime.now(timezone.utc) + timedelta(minutes=30)
     else:
         expire = expires_token_time
