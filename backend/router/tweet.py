@@ -1,8 +1,8 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
-from db.db_tables import Tweet, Profile, User
+from db.db_tables import Tweet, Profile, User, Like
 from db.db_connection import get_session
 from fastapi import APIRouter, HTTPException, status, Depends
-from sqlmodel import select
+from sqlmodel import select, update, delete
 from sqlalchemy.orm import selectinload
 from uuid import UUID
 from typing import List
@@ -121,3 +121,40 @@ async def delete_tweet(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Internal server error: {err}",
         )
+
+
+# like count logic ---------------------------------------------->
+
+
+@tweet_router.post("/{tweet_id}/like")
+async def like_tweet(
+    tweet_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_session),
+):
+    statement = await db.exec(
+        select(Like).where(
+            Like.user_id == current_user.user_id,
+            Like.tweet_id == tweet_id,
+        )
+    )
+    exist_like = statement.first()
+    if exist_like:
+        db.delete(exist_like)
+        await db.exec(
+            update(Tweet)
+            .where(Tweet.tweet_id == tweet_id)
+            .values(like_count=Tweet.like_count - 1)
+        )
+        db.commit()
+        return {"message": "unliked", "liked": False}
+    else:
+        new_like = Like(tweet_id == tweet_id, user_id=current_user.user_id)
+        db.add(new_like)
+        await db.exec(
+            update(Tweet)
+            .where(Tweet.tweet_id == tweet_id)
+            .values(lke_count=Tweet.like_count + 1)
+        )
+    db.commit()
+    return {"message": "liked", "liked": True}
