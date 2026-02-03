@@ -124,8 +124,6 @@ async def delete_tweet(
 
 
 # like count logic ---------------------------------------------->
-
-
 @tweet_router.post("/{tweet_id}/like")
 async def like_tweet(
     tweet_id: UUID,
