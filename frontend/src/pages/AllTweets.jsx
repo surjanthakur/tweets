@@ -23,7 +23,6 @@ function formatTweetTime(isoString) {
 export default function AllTweets() {
   const [tweets, setTweets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [likecount, setLikeCount] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -103,14 +102,15 @@ export default function AllTweets() {
               <Message size={18} />
               comments
             </button>
+
+            {/* like button */}
             <button
-              onClick={() => setLikeCount(likecount + 1)}
               type="button"
-              className="action-btn like"
+              className={`action-btn like`}
               aria-label="Like"
             >
-              <Heart size={18} />
-              {likecount}
+              <Heart size={18} fill={"red"} />
+              like
             </button>
           </div>
         </article>

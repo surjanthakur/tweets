@@ -93,7 +93,6 @@ class Tweet(SQLModel, table=True):
         nullable=False,
         ondelete="CASCADE",
     )
-    like_count = int = Field(default=0)
     content: Annotated[str, Field(..., min_length=10, max_length=750)]
     created_at: datetime = Field(
         default_factory=datetime.utcnow,
@@ -133,27 +132,3 @@ class Comment(SQLModel, table=True):
         nullable=False,
     )
     tweet: "Tweet" = Relationship(back_populates="comments")
-
-
-class Like(SQLModel, table=True):
-    like_id: UUID = Field(
-        default_factory=uuid.uuid4,
-        primary_key=True,
-        nullable=False,
-    )
-
-    tweet_id: UUID = Field(
-        foreign_key="tweet.tweet_id",
-        nullable=False,
-        ondelete="CASCADE",
-    )
-
-    user_id: UUID = Field(
-        foreign_key="user.user_id",
-        nullable=False,
-        ondelete="CASCADE",
-    )
-    created_at: datetime = Field(
-        default_factory=datetime.utcnow,
-        nullable=False,
-    )
