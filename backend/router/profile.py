@@ -61,7 +61,7 @@ async def create_profile(
         exist_pofile = statement.first()
         if exist_pofile:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=status.HTTP_409_CONFLICT,
                 detail="You already have a profile. Only one profile per user allowed.",
             )
         new_profile = Profile(
@@ -73,7 +73,8 @@ async def create_profile(
         return new_profile
     except Exception as err:
         raise HTTPException(
-            status_code=500, detail=f"error while creating profile: {err}"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"error while creating profile: {err}",
         )
 
 
@@ -106,5 +107,8 @@ async def edit_profile(
         await db.commit()
         await db.refresh(my_profile)
         return my_profile
-    except HTTPException:
-        raise
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"server error: {err}",
+        )
