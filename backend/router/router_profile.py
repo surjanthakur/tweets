@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from sqlmodel import select
 from auth.auth_service import get_current_user
 from db.db_tables import User
-from ..services import profile_service
+from services import profile_service
 
 profile_router = APIRouter(prefix="/profiles", tags=["Profiles"])
 
