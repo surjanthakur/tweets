@@ -22,42 +22,24 @@ async def get_profile(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_session),
 ):
-    return await profile_service.get_currProfile(current_user.user_id, db)
+    return await profile_service.get_currProfile(user_id=current_user.user_id, db=db)
 
 
-# create new profile
+# create profile
 @profile_router.post(
     "/create",
     status_code=status.HTTP_201_CREATED,
     summary="Create profile for the authenticated user",
+    response_model=ResponseProfile,
 )
 async def create_profile(
-    profile_data: RequestProfile,
+    req_data: RequestProfile,
     db: AsyncSession = Depends(get_session),
     current_user: User = Depends(get_current_user),
 ):
-    try:
-        statement = await db.exec(
-            select(Profile).where(Profile.user_id == current_user.user_id)
-        )
-        exist_pofile = statement.first()
-        if exist_pofile:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="You already have a profile. Only one profile per user allowed.",
-            )
-        new_profile = Profile(
-            **profile_data.model_dump(exclude_unset=True), user_id=current_user.user_id
-        )
-        db.add(new_profile)
-        await db.commit()
-        await db.refresh(new_profile)
-        return new_profile
-    except Exception as err:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"error while creating profile: {err}",
-        )
+    return await profile_service.create_profile(
+        req_data=req_data, db=db, user_id=current_user.user_id
+    )
 
 
 # edit profile
@@ -71,26 +53,8 @@ async def edit_profile(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_session),
 ):
-    statement = await db.exec(
-        select(Profile).where(Profile.user_id == current_user.user_id)
+    return await profile_service.update_profile(
+        req_data=profile_data,
+        user_id=current_user.user_id,
+        db=db,
     )
-    my_profile = statement.first()
-    if not my_profile:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="You don't have a profile to edit.",
-        )
-
-    updated_dic = profile_data.model_dump(exclude_unset=True)
-    for k, v in updated_dic.items():
-        setattr(my_profile, k, v)
-    try:
-        db.add(my_profile)
-        await db.commit()
-        await db.refresh(my_profile)
-        return my_profile
-    except Exception as err:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"server error: {err}",
-        )
