@@ -30,7 +30,7 @@ class User(SQLModel, table=True):
     )
     profile: "Profile" = Relationship(back_populates="user")
 
-    @field_validator("email", mode="before")
+    @field_validator("email", mode="after")
     @classmethod
     def email_validator(cls, value: str):
         if "@" not in value:

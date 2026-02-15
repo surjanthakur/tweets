@@ -9,7 +9,7 @@ from typing import List
 from models.validation_models import RequestTweet, TweetResponse
 from auth.auth_service import get_current_user
 
-tweet_router = APIRouter(tags=["tweets"], prefix="/tweet")
+tweet_router = APIRouter(tags=["tweets"], prefix="/tweets")
 
 
 # get all tweets
