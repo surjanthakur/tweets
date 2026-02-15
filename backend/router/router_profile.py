@@ -1,14 +1,14 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from db.db_tables import Profile
 from db.db_connection import get_session
-from models.validation_models import RequestProfile, ProfileResponse
+from models.validation_models import RequestProfile, ResponseProfile
 from fastapi import APIRouter, HTTPException, status, Depends
 from sqlmodel import select
-from sqlalchemy.orm import selectinload
 from auth.auth_service import get_current_user
 from db.db_tables import User
+from ..services import profile_service
 
-profile_router = APIRouter(prefix="/profile", tags=["Profile"])
+profile_router = APIRouter(prefix="/profiles", tags=["Profiles"])
 
 
 # Get profile
@@ -16,31 +16,13 @@ profile_router = APIRouter(prefix="/profile", tags=["Profile"])
     "/me",
     status_code=status.HTTP_200_OK,
     summary="Get current user's profile",
+    response_model=ResponseProfile,
 )
 async def get_profile(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_session),
 ):
-    try:
-        result = await db.exec(
-            select(Profile)
-            .options(selectinload(Profile.tweets))
-            .where(Profile.user_id == current_user.user_id)
-        )
-        my_profile = result.first()
-        if not my_profile:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="cant find profile",
-            )
-        return ProfileResponse.model_validate(my_profile)
-    except HTTPException:
-        raise
-    except Exception as err:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"error while getting profile: {err}",
-        )
+    return await profile_service.get_currProfile(current_user.user_id, db)
 
 
 # create new profile

@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from router import profile, tweet
+from backend.router import router_profile
+from router import tweet
 from contextlib import asynccontextmanager
 import logging
 from db.db_connection import create_db_tables
@@ -47,5 +48,5 @@ app.add_middleware(
     max_age=600,
 )
 app.include_router(router=auth_router)
-app.include_router(router=profile.profile_router)
+app.include_router(router=router_profile.profile_router)
 app.include_router(router=tweet.tweet_router)
