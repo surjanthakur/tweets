@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 import logging
 from db.db_connection import create_db_tables
 from fastapi.middleware.cors import CORSMiddleware
+from auth.auth_router import auth_router
 
 
 logging.basicConfig(level=logging.INFO)
@@ -46,3 +47,4 @@ app.add_middleware(
     max_age=600,
 )
 app.include_router(router=router_profile.profile_router)
+app.include_router(router=auth_router)
