@@ -21,3 +21,8 @@ async def get_tweets_by_id(tweet_id, db):
             status_code=status.HTTP_400_BAD_REQUEST, detail="tweet not found!"
         )
     return my_tweet
+
+
+# create tweet
+async def create_tweet(req_data, user_id, db):
+    pass

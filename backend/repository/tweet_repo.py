@@ -10,5 +10,11 @@ async def get_tweets(db: AsyncSession):
     return query.all()
 
 
-async def tweet_by_id(tweet_id, db):
-    pass
+# fetch tweet by id
+async def tweet_by_id(tweet_id, db: AsyncSession):
+    query = await db.exec(
+        select(Tweet)
+        .options(selectinload(Tweet.comments))
+        .where(Tweet.tweet_id == tweet_id)
+    )
+    return query.first()
