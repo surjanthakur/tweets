@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from router import router_profile
+from backend.router import profileRouter
 from contextlib import asynccontextmanager
 import logging
 from db.db_connection import create_db_tables
@@ -46,5 +46,5 @@ app.add_middleware(
     allow_methods=["*"],
     max_age=600,
 )
-app.include_router(router=router_profile.profile_router)
+app.include_router(router=profileRouter.profile_router)
 app.include_router(router=auth_router)
