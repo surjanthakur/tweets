@@ -37,7 +37,7 @@ async def create_tweet(req_data, user_id: str, db):
     db.add(new_tweet)
     await db.commit()
     await db.refresh(new_tweet)
-    return new_tweet
+    return {"detail": "tweet created successfully!"}
 
 
 async def delete_tweet(tweet_id: str, user_id: str, db: AsyncSession):

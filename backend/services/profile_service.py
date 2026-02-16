@@ -4,7 +4,7 @@ from repository import profile_repo
 from db.db_tables import Profile
 
 
-# get currProfile
+# get Profile
 async def get_currProfile(user_id: str, db: AsyncSession):
     my_profile = await profile_repo.get_by_userId(user_id, db)
 
