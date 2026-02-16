@@ -24,7 +24,6 @@ class RequestProfile(BaseModel):
 class ResponseTweet(BaseModel):
     """Tweet fields for API response (no profile/comments to avoid circular refs)."""
 
-    tweet_id: UUID
     content: str
     created_at: datetime
     profile: RequestProfile

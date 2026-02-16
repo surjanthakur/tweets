@@ -6,7 +6,7 @@ from uuid import UUID
 from typing import List
 from models.validation_models import RequestTweet, ResponseTweet
 from auth.auth_service import get_current_user
-from services.tweet_service import all_tweets, get_tweets_by_id
+from services.tweet_service import all_tweets, get_tweets_by_id, create_tweet
 
 tweet_router = APIRouter(tags=["tweets"], prefix="/tweets")
 
@@ -39,9 +39,11 @@ async def get_tweet_by_id(
 async def create_new_tweet(
     tweet_data: RequestTweet,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_session),
+    session_db: AsyncSession = Depends(get_session),
 ):
-    pass
+    return await create_tweet(
+        req_data=tweet_data.content, user_id=current_user.user_id, db=session_db
+    )
 
 
 # delete tweet
