@@ -6,17 +6,19 @@ from uuid import UUID
 from typing import List
 from models.validation_models import RequestTweet, ResponseTweet
 from auth.auth_service import get_current_user
-from services.tweet_service import all_tweets, get_tweets_by_id, create_tweet
+from services.tweet_service import (
+    all_tweets,
+    get_tweets_by_id,
+    create_tweet,
+    delete_tweet,
+)
 
 tweet_router = APIRouter(tags=["tweets"], prefix="/tweets")
 
 
 # get all tweets
 @tweet_router.get(
-    "/all",
-    status_code=status.HTTP_200_OK,
-    response_model=List[ResponseTweet],
-    summary="Get all tweets",
+    "/all", status_code=status.HTTP_200_OK, response_model=List[ResponseTweet]
 )
 async def get_all_tweets(session_db: AsyncSession = Depends(get_session)):
     return await all_tweets(db=session_db)
@@ -53,6 +55,8 @@ async def create_new_tweet(
 async def delete_tweet(
     tweet_id: UUID,
     current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_session),
+    session_db: AsyncSession = Depends(get_session),
 ):
-    pass
+    return await delete_tweet(
+        tweet_id=tweet_id, user_id=current_user.user_id, db=session_db
+    )

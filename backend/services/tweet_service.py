@@ -16,7 +16,7 @@ async def all_tweets(db: AsyncSession):
 
 
 # get tweet by id
-async def get_tweets_by_id(tweet_id, db):
+async def get_tweets_by_id(tweet_id: str, db):
     my_tweet = await tweet_by_id(tweet_id=tweet_id, db=db)
     if not my_tweet:
         raise HTTPException(
@@ -26,7 +26,7 @@ async def get_tweets_by_id(tweet_id, db):
 
 
 # create tweet
-async def create_tweet(req_data, user_id, db):
+async def create_tweet(req_data, user_id: str, db):
     profile = await get_profile_only(user_id=user_id, db=db)
     if not profile:
         raise HTTPException(
@@ -38,3 +38,21 @@ async def create_tweet(req_data, user_id, db):
     await db.commit()
     await db.refresh(new_tweet)
     return new_tweet
+
+
+async def delete_tweet(tweet_id: str, user_id: str, db: AsyncSession):
+    my_tweet = await tweet_by_id(tweet_id=tweet_id, db=db)
+    if not my_tweet:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="tweet not found!"
+        )
+
+    if my_tweet.profile.user_id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="you are not authorized to delete this tweet!",
+        )
+
+    await db.delete(my_tweet)
+    await db.commit()
+    return {"detail": "tweet deleted successfully!"}
