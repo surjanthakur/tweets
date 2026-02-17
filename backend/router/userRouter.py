@@ -21,4 +21,8 @@ async def login_account(
     req_form: OAuth2PasswordRequestForm = Depends(),
     session_db: AsyncSession = Depends(get_session),
 ):
-    return await authenticate_user(form_data=req_form, db=session_db)
+    return await authenticate_user(
+        username=req_form.username,
+        password=req_form.password,
+        db=session_db,
+    )
