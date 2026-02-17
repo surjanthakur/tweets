@@ -1,14 +1,13 @@
 from fastapi import HTTPException, status
-from fastapi.responses import JSONResponse
 from sqlmodel.ext.asyncio.session import AsyncSession
-from repository.user_repo import get_user_by_email
+from sqlalchemy.exc import IntegrityError
 from db.db_tables import User
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 import jwt
 
-pass_hash = PasswordHash()
+pass_hash = PasswordHash.recommended()
 
 
 # hashed password
@@ -23,16 +22,24 @@ def verify_password(plain_password: str, hash_password: str):
 
 # create new account
 async def create_account(form_data: object, db: AsyncSession):
-    user = await get_user_by_email(email=form_data.email, db=db)
-    if user:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="user already exists"
-        )
-    hashed_password = get_hashed_password(password=form_data.password)
     new_user = User(
-        username=form_data.username, email=form_data.email, password=hashed_password
+        username=form_data.username,
+        email=form_data.email,
+        password=get_hashed_password(form_data.password),
     )
-    db.add(new_user)
-    await db.commit()
-    await db.refresh(new_user)
-    return JSONResponse(status_code=status.HTTP_201_CREATED, content="signup succeded")
+    try:
+        db.add(new_user)
+        await db.commit()
+        return {"message": "signup succeeded"}
+
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Username or email already exists",
+        )
+
+
+# authenticate user
+async def authenticate_user(db: AsyncSession):
+    pass

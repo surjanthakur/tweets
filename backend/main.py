@@ -1,10 +1,9 @@
 from fastapi import FastAPI
-from backend.router import profileRouter
 from contextlib import asynccontextmanager
 import logging
 from db.db_connection import create_db_tables
 from fastapi.middleware.cors import CORSMiddleware
-from auth.auth_router import auth_router
+from router import userRouter
 
 
 logging.basicConfig(level=logging.INFO)
@@ -46,5 +45,4 @@ app.add_middleware(
     allow_methods=["*"],
     max_age=600,
 )
-app.include_router(router=profileRouter.profile_router)
-app.include_router(router=auth_router)
+app.include_router(router=userRouter.user_router, prefix="/api/v1.0")
