@@ -4,13 +4,14 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from db.db_connection import get_session
 from models.auth_models import User_validation
+from services.auth_service import create_account
 
 
 user_router = APIRouter(prefix="/users", tags=["users"])
 
 
 @user_router.post("/signup")
-def signup_account(
+async def signup_account(
     req_form: User_validation, session_db: AsyncSession = Depends(get_session)
 ):
-    pass
+    return await create_account(form_data=req_form, db=session_db)
