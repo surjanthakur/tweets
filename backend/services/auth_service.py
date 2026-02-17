@@ -41,5 +41,5 @@ async def create_account(form_data: object, db: AsyncSession):
 
 
 # authenticate user
-async def authenticate_user(db: AsyncSession):
+async def authenticate_user(form_data: OAuth2PasswordRequestForm, db: AsyncSession):
     pass
