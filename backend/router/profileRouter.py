@@ -4,7 +4,6 @@ from db.db_connection import get_session
 from models.validation_models import RequestProfile, ResponseProfile
 from fastapi import APIRouter, HTTPException, status, Depends
 from sqlmodel import select
-from auth.auth_service import get_current_user
 from db.db_tables import User
 from services import profile_service
 
@@ -27,7 +26,7 @@ async def get_profile(
 
 # create profile
 @profile_router.post(
-    "/create",
+    "/create",x
     status_code=status.HTTP_201_CREATED,
     summary="Create profile for the authenticated user",
     response_model=ResponseProfile,
